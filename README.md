@@ -1,1 +1,2 @@
-# Athena-2.0
+# Athena 2
+Password hash recovery tool
