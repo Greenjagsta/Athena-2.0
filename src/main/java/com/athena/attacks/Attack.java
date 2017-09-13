@@ -17,13 +17,11 @@
 
 package com.athena.attacks;
 
-import com.athena.Athena;
 import com.athena.hashfamily.Hash;
 import com.athena.hashfamily.md.MD5;
 import com.athena.hashfamily.sha.SHA1;
 import com.athena.utils.HashManager;
 import com.athena.utils.Output;
-import com.athena.utils.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -41,26 +39,12 @@ public abstract class Attack {
     private StringBuilder sb = new StringBuilder();
     private ArrayList<Integer> hashType;
 
-    public abstract ArrayList<byte[]> getNextCandidates();
+    //public abstract ArrayList<byte[]> getNextCandidates();
 
-    public void attack() {
-        for (byte[] fileBuffer : getNextCandidates())
-            for (byte[] candidate : StringUtils.formatFileBytes(fileBuffer)) {
-                if (!hashman.isAllCracked()) {
-                    checkAttempt(candidate);
-                } else {
-                    return;
-                }
-            }
-    }
+    public abstract void attack();
 
-    private void checkAttempt(byte[] candidate) {
+    protected void checkAttempt(byte[] candidate) {
         byte[] candidateHash = getDigest(candidate);
-
-        /*System.out.println();
-        hashman.printHashes();
-        System.out.println("Hash: " + com.athena.utils.StringUtils.byteArrayToHexString(candidateHash) + " Bytes: " + java.util.Arrays.toString(candidateHash));
-        System.out.println(hashman.hashExists(candidateHash));*/
 
         if (hashman.hashExists(candidateHash)) {
             hashman.setCracked(sb.append(byteArrayToHexString(candidateHash)).toString());
@@ -98,5 +82,9 @@ public abstract class Attack {
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }
+    }
+
+    public boolean isAllCracked() {
+        return hashman.isAllCracked();
     }
 }

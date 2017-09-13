@@ -18,7 +18,8 @@
 package com.athena;
 
 import com.athena.attacks.Dictionary;
-import com.athena.utils.FileUtils;
+import com.athena.attacks.Mask;
+import com.athena.attacks.Probabilistic;
 import com.athena.utils.Output;
 import com.athena.utils.Timer;
 import com.athena.utils.enums.Mode;
@@ -41,6 +42,11 @@ public class Athena {
     private static int mode;
     @Option(name = "-h", aliases = "--hash-type", usage = "Hash type in input file")
     private static int hashType;
+    @Option(name = "-k", aliases = "--mask", usage = "Mask to use")
+    private static String maskString;
+    @Option(name = "--increment", usage = "Increment mask")
+    private static boolean increment = false;
+    //TODO Add --increment for mask attack (only if mask is the same (static chars can be at beginning or end though))
     
     private static final String VERSION = "2.0";
     private static Timer timer;
@@ -51,7 +57,12 @@ public class Athena {
             clp.parseArgument(args);
             //Output.printStatus("Initialising", hashFile_filename, hashType, mode, 0);
 
+            //Change this to method that checks input for errors
             if (Mode.getMode(mode).requiresDict2() && wordlist_filename[1] == null) {
+                throw new IOException();
+            }
+
+            if (Mode.getMode(mode).requiresMask() && maskString == null) {
                 throw new IOException();
             }
         } catch (CmdLineException ex) {
@@ -71,10 +82,19 @@ public class Athena {
                 dictionary.attack();
                 break;
 
+            case 102:
+                Mask mask = new Mask(maskString, increment, hashFile_filename, hashType);
+                mask.attack();
+                break;
+
+            case 105:
+                Probabilistic probabilistic = new Probabilistic(hashFile_filename, hashType);
+                probabilistic.attack();
+                break;
+
             default:
                 break;
         }
-
         timer.stopTimer();
     }
 

@@ -1,0 +1,10 @@
+ld
+lld
+dd
+nd
+wd
+llll
+dddd
+n
+nd
+w

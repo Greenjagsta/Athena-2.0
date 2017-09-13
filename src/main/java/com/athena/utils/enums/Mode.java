@@ -25,31 +25,29 @@ import java.util.Map;
  * @author Jack
  */
 public enum Mode {
-    INCREMENTAL(100, "Incremental", false, false, false, false),
-    DICTIONARY(101, "Dictionary", true, false, false, false),
-    BRUTE(102, "Brute", false, false, true, true),
-    HYBRID(103, "Hybrid", true, false, false, true),
-    COMBINATOR(104, "Combinator", true, true, false, false);
+    INCREMENTAL(100, "Incremental", false, false, false),
+    DICTIONARY(101, "Dictionary", true, false, false),
+    MASK(102, "Mask", false, false, true),
+    HYBRID(103, "Hybrid", true, false, true),
+    COMBINATOR(104, "Combinator", true, true, false);
 
     private final int code;
     private final String modeName;
     private final boolean requiresDict;
     private final boolean requiresDict2;
-    private final boolean requiresCharSet;
-    private final boolean requiresMaxLength;
+    private final boolean requiresMask;
 
     /**
      * A mapping between the integer code and its corresponding Status to facilitate lookup by code.
      */
     private static Map<Integer, Mode> codeToModeMapping;
 
-    Mode(int code, String modeName, boolean requiresDict, boolean requiresDict2, boolean requiresCharSet, boolean requiresMaxLength) {
+    Mode(int code, String modeName, boolean requiresDict, boolean requiresDict2, boolean requiresMask) {
         this.code = code;
         this.modeName = modeName;
         this.requiresDict = requiresDict;
         this.requiresDict2 = requiresDict2;
-        this.requiresCharSet = requiresCharSet;
-        this.requiresMaxLength = requiresMaxLength;
+        this.requiresMask = requiresMask;
     }
 
     public static Mode getMode(int i) {
@@ -60,7 +58,7 @@ public enum Mode {
     }
 
     private static void initMapping() {
-        codeToModeMapping = new HashMap<Integer, Mode>();
+        codeToModeMapping = new HashMap<>();
         for (Mode s : values()) {
             codeToModeMapping.put(s.code, s);
         }
@@ -82,12 +80,8 @@ public enum Mode {
         return requiresDict2;
     }
 
-    public boolean requiresCharSet() {
-        return requiresCharSet;
-    }
-
-    public boolean requiresMaxLength() {
-        return requiresMaxLength;
+    public boolean requiresMask() {
+        return requiresMask;
     }
 
     @Override

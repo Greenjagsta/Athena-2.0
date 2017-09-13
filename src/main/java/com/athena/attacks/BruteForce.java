@@ -10,6 +10,11 @@ public class BruteForce extends Attack {
         super.setHashman(new HashManager(hashes_filename));
     }
 
+    @Override
+    public void attack() {
+
+    }
+
     public ArrayList<byte[]> getNextCandidates() {
         return null;
     }
