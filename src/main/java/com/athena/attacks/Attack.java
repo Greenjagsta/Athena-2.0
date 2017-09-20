@@ -97,7 +97,7 @@ public abstract class Attack {
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }
-        Output.printStatus("active", "input.txt", this.hashType.get(0), Athena.getMode());
+        Output.printStatus("active", "input.txt", this.hashType.get(0), Athena.mode);
     }
 
     public boolean isAllCracked() {

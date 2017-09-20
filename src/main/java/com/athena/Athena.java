@@ -41,7 +41,7 @@ public class Athena {
     @Option(name = "-d", aliases = "--dictionary-file", handler = StringArrayOptionHandler.class, usage = "Dictionary file to use")
     private static String[] wordlist_filename;
     @Option(name = "-m", aliases = "--mode", usage = "Attack mode to use")
-    private static int mode;
+    public static int mode;
     @Option(name = "-h", aliases = "--hash-type", usage = "Hash type in input file")
     private static int hashType = 0;
     @Option(name = "-k", aliases = "--mask", usage = "Mask to use")
@@ -88,10 +88,6 @@ public class Athena {
         } catch (IOException ex) {
             Logger.getLogger(Athena.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public static int getMode(){
-        return mode;
     }
 
     private static void initAttack() {
