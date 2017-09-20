@@ -1,8 +1,6 @@
 package com.athena.attacks;
 
-import com.athena.hashfamily.Hash;
 import com.athena.utils.HashManager;
-import com.athena.utils.enums.Mode;
 
 import java.io.File;
 import java.util.ArrayList;
