@@ -17,9 +17,14 @@
 
 package com.athena.hashfamily;
 
+import com.athena.utils.StringUtils;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public enum Hash {
@@ -87,5 +92,18 @@ public enum Hash {
     
     public String getRegex() {
         return regex;
+    }
+
+    public Method getDigestInstance() {
+        try {
+            return classname.newInstance().getClass().getMethod("digest", byte[].class);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(StringUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(StringUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchMethodException ex) {
+            Logger.getLogger(StringUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

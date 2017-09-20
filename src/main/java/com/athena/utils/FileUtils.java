@@ -18,6 +18,7 @@
 package com.athena.utils;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -107,35 +108,59 @@ public class FileUtils {
         return null;
     }
 
-    public static ArrayList<byte[]> getFileChunk(String filename) {
-        FileInputStream f = null;
+    public static ArrayList<byte[]> getFileChunk(File file) {
         ArrayList<byte[]> barrays = new ArrayList<>();
 
-        try {
-            f = new FileInputStream(filename);
+        try (FileInputStream f = new FileInputStream(file)){
             FileChannel ch = f.getChannel();
             MappedByteBuffer mb;
             mb = ch.map(FileChannel.MapMode.READ_ONLY, 0L, ch.size());
             int nGet;
 
             while (mb.hasRemaining()) {
-                byte[] barray = new byte[8000];
                 nGet = Math.min(mb.remaining(), 8000);
+                byte[] barray = new byte[nGet];
                 mb.get(barray, 0, nGet);
                 barrays.add(barray);
             }
+
+            ch.close();
+            f.close();
+
             return barrays;
         } catch (IOException ex) {
             Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (f != null) {
-                    f.close();
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
         return null;
+    }
+
+    public static void write(File file, ArrayList<String> data) {
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")){
+            FileChannel ch = raf.getChannel();
+
+            if (data.size() == 0) {
+                ByteBuffer bb = ByteBuffer.allocate(1);
+                bb.put("".getBytes());
+                ch.write(bb);
+            } else {
+                ByteBuffer bb = ByteBuffer.allocate(96);
+                for (int i = 0; i < data.size(); i++) {
+                    bb.clear();
+                    bb.put(data.get(i).getBytes());
+                    if (i != data.size() - 1) {
+                        bb.put(System.getProperty("line.separator").getBytes());
+                    }
+                    bb.flip();
+                    while (bb.hasRemaining()) {
+                        ch.write(bb);
+                    }
+                }
+            }
+
+            ch.close();
+            raf.close();
+        } catch (IOException ex) {
+            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

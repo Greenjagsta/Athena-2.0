@@ -1,19 +1,20 @@
 package com.athena.attacks;
 
-import com.athena.utils.CounterList;
-import com.athena.utils.FileUtils;
-import com.athena.utils.HashManager;
-import com.athena.utils.StringUtils;
+import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Probabilistic extends Attack {
-    private final String PROB_FILEPATH = "prob.txt";
-    private final String WORD_FILEPATH = "words.txt";
-    private final String NAME_FILEPATH = "names.txt";
+    private final File PROBFILE = new File("resources/prob.txt");
+    private final File WORDFILE = new File("resources/words.txt");
+    private final File NAMEFILE = new File("resources/names.txt");
 
     private ArrayList<byte[]> words;
     private ArrayList<byte[]> names;
@@ -22,9 +23,10 @@ public class Probabilistic extends Attack {
 
     private int currentIndex = 0;
 
-    public Probabilistic(String hashes_filename, int hashType) {
-        super.setHashType(hashType, hashes_filename);
-        super.setHashman(new HashManager(hashes_filename));
+    public Probabilistic(ArrayList<byte[]> hashes, int hashType) {
+        super.setHashType(hashType, hashes);
+        super.setHashman(new HashManager(hashes));
+        super.initDigestInstance();
 
         this.candidateElements = new CounterList<>();
         this.candidates = new ArrayList<>();
@@ -38,12 +40,9 @@ public class Probabilistic extends Attack {
     @Override
     public void attack() {
         while (isMoreCandidates()) {
-/*            System.out.println("cand - curr index: " + new String(candidates.get(currentIndex - 1)));
-            System.out.println("ele - first: " + new String(StringUtils.stripList(candidateElements.get(0))));
-            System.out.println("ele - size: " + candidateElements.size());*/
             for (int i = 0; i < candidateElements.size(); i++) {
                 if (!super.isAllCracked()) {
-                    super.checkAttempt(StringUtils.stripList(candidateElements.get(i)));
+                    super.checkAttempt(ArrayUtils.stripList(candidateElements.get(i)));
                 } else {
                     return;
                 }
@@ -62,31 +61,33 @@ public class Probabilistic extends Attack {
                 return false;
             }
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
     private void parseCandidate(byte[] candidate) {
-        for (byte b : candidate) {
-            switch (b) {
+        ArrayList<byte[]> elements = ArrayUtils.split(candidate, (byte) 33);
+
+        for (byte[] element : elements) {
+            switch (element[0]) {
                 case 108:
-                    candidateElements.add(CharSet.LOWER_ALPHABETIC.getCharsList());
+                    addStaticChars(element[0], element);
                     break;
                 case 100:
-                    candidateElements.add(CharSet.NUMERIC.getCharsList());
+                    addStaticChars(element[0], element);
                     break;
                 case 115:
-                    candidateElements.add(CharSet.SPECIAL.getCharsList());
+                    addStaticChars(element[0], element);
                     break;
                 case 117:
-                    candidateElements.add(CharSet.UPPER_ALPHABETIC.getCharsList());
+                    addStaticChars(element[0], element);
                     break;
                 case 110:
-                    candidateElements.add(names);
+                    addNames(element);
                     break;
                 case 119:
-                    candidateElements.add(words);
+                    addWords(element);
                     break;
                 default:
                     break;
@@ -94,10 +95,97 @@ public class Probabilistic extends Attack {
         }
     }
 
+    private void addStaticChars(byte b, byte[] element) {
+        List<byte[]> charset;
+
+        switch (b) {
+            case 108:
+                charset = CharSet.LOWER_ALPHABETIC.getCharsList();
+                break;
+            case 100:
+                charset = CharSet.NUMERIC.getCharsList();
+                break;
+            case 115:
+                charset = CharSet.SPECIAL.getCharsList();
+                break;
+            case 117:
+                charset = CharSet.UPPER_ALPHABETIC.getCharsList();
+                break;
+            default:
+                charset = new ArrayList<>();
+        }
+
+        if (element[element.length - 1] != b) {
+            CounterList<byte[]> nums = new CounterList<>();
+            ArrayList<byte[]> temp = new ArrayList<>();
+            ArrayList<byte[]> result = new ArrayList<>();
+
+            int repeatLength = element[element.length - 1] - 48;
+            for (int i = 0; i < element.length - 1; i++) {
+                nums.add(charset);
+            }
+
+            for (int i = 0; i < nums.size(); i++) {
+                int count = 0;
+                byte[] arr = ArrayUtils.stripList(nums.get(i));
+
+                for (int j = 1; j < arr.length; j++) {
+                    if (arr[0] == arr[j]) {
+                        count++;
+                    }
+                }
+
+                if (count != arr.length - 1) {
+                    temp.add(arr);
+                } else if (arr.length == 1) {
+                    temp.add(arr);
+                }
+            }
+
+            for (byte[] t : temp) {
+                byte[] resultArray = new byte[t.length * repeatLength];
+                for (int i = 0; i < repeatLength; i++) {
+                    System.arraycopy(t, 0, resultArray, i * t.length, t.length);
+                }
+                result.add(resultArray);
+            }
+            candidateElements.add(result);
+        } else {
+            for (byte ignored : element) {
+                candidateElements.add(charset);
+            }
+        }
+    }
+
+    private void addNames(byte[] element) {
+        if (element[element.length - 1] == 76) {
+            int length = element[element.length - 2] - 48;
+            candidateElements.add(l33tify(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
+        } else {
+            int length = element[element.length - 1] - 48;
+            candidateElements.add(names.stream().filter(n -> n.length == length).collect(Collectors.toList()));
+        }
+    }
+
+    private void addWords(byte[] element) {
+        if (element[element.length - 1] == 76) {
+            int length = element[element.length - 2] - 48;
+            candidateElements.add(l33tify(words.stream().filter(w -> w.length == (length)).collect(Collectors.toList())));
+        } else {
+            int length = element[element.length - 1] - 48;
+            candidateElements.add(words.stream().filter(w -> w.length == (length)).collect(Collectors.toList()));
+        }
+    }
+
+    //TODO - Implement this
+    private List<byte[]> l33tify(List<byte[]> candidates) {
+        return candidates;
+    }
+
     private void initCandidates() {
         try {
-            for (byte[] fileBuffer : FileUtils.getFileChunk(PROB_FILEPATH)) {
-                candidates.addAll(StringUtils.formatFileBytes(fileBuffer));
+            for (byte[] fileBuffer : FileUtils.getFileChunk(PROBFILE)) {
+                candidates.addAll(ArrayUtils.formatFileBytes(fileBuffer));
             }
 
         } catch (NullPointerException ex) {
@@ -107,15 +195,15 @@ public class Probabilistic extends Attack {
 
     private void initElements() {
         try {
-            for (byte[] fileBuffer : FileUtils.getFileChunk(WORD_FILEPATH)) {
-                words.addAll(StringUtils.formatFileBytes(fileBuffer));
+            for (byte[] fileBuffer : FileUtils.getFileChunk(WORDFILE)) {
+                words.addAll(ArrayUtils.formatFileBytes(fileBuffer));
             }
-            for (byte[] fileBuffer : FileUtils.getFileChunk(NAME_FILEPATH)) {
-                names.addAll(StringUtils.formatFileBytes(fileBuffer));
+            for (byte[] fileBuffer : FileUtils.getFileChunk(NAMEFILE)) {
+                names.addAll(ArrayUtils.formatFileBytes(fileBuffer));
             }
 
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

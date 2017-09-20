@@ -4,6 +4,8 @@ import com.athena.utils.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -13,8 +15,6 @@ public class DictionaryTest {
 
     @Test
     public void getNextCandidatesTest() {
-        Dictionary d = new Dictionary("test.txt", "test.txt", 0);
-
-        //d.attack();
+        Dictionary d = new Dictionary("test.txt", new ArrayList<byte[]>(), 100);
     }
 }

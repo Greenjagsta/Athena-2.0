@@ -17,34 +17,37 @@
 
 package com.athena.attacks;
 
+import com.athena.utils.ArrayUtils;
 import com.athena.utils.FileUtils;
 import com.athena.utils.HashManager;
-import com.athena.utils.StringUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Dictionary extends Attack {
-    private String wordlist_filename;
+    private File wordlist;
 
-    public Dictionary(String wordlist_filename, String hashes_filename, int hashType) {
-        this.wordlist_filename = wordlist_filename;
-        super.setHashType(hashType, hashes_filename);
-        super.setHashman(new HashManager(hashes_filename));
+    public Dictionary(String wordlist_filename, ArrayList<byte[]> hashes, int hashType) {
+        this.wordlist = new File(wordlist_filename);
+        super.setHashType(hashType, hashes);
+        super.setHashman(new HashManager(hashes));
+        super.initDigestInstance();
     }
 
     @Override
     public void attack() {
-        for (byte[] fileBuffer : getNextCandidates())
-            for (byte[] candidate : StringUtils.formatFileBytes(fileBuffer)) {
+        for (byte[] fileBuffer : getNextCandidates()) {
+            for (byte[] candidate : ArrayUtils.formatFileBytes(fileBuffer)) {
                 if (!super.isAllCracked()) {
                     checkAttempt(candidate);
                 } else {
                     return;
                 }
             }
+        }
     }
-    
+
     public ArrayList<byte[]> getNextCandidates() {
-        return FileUtils.getFileChunk(wordlist_filename);
+        return FileUtils.getFileChunk(wordlist);
     }
 }

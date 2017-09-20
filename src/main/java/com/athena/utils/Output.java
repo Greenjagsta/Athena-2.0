@@ -39,4 +39,8 @@ public class Output {
     public static void printCracked(String hash, String plaintext) {
         System.out.println(hash + ":" + plaintext);
     }
+
+    public static void printRemoved(int amount) {
+        System.out.println(amount + " hashes removed from file");
+    }
 }

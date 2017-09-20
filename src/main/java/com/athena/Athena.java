@@ -20,8 +20,8 @@ package com.athena;
 import com.athena.attacks.Dictionary;
 import com.athena.attacks.Mask;
 import com.athena.attacks.Probabilistic;
-import com.athena.utils.Output;
-import com.athena.utils.Timer;
+import com.athena.post.PotFile;
+import com.athena.utils.*;
 import com.athena.utils.enums.Mode;
 
 import org.kohsuke.args4j.CmdLineException;
@@ -29,7 +29,9 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,15 +43,21 @@ public class Athena {
     @Option(name = "-m", aliases = "--mode", usage = "Attack mode to use")
     private static int mode;
     @Option(name = "-h", aliases = "--hash-type", usage = "Hash type in input file")
-    private static int hashType;
+    private static int hashType = 0;
     @Option(name = "-k", aliases = "--mask", usage = "Mask to use")
     private static String maskString;
     @Option(name = "--increment", usage = "Increment mask")
     private static boolean increment = false;
     //TODO Add --increment for mask attack (only if mask is the same (static chars can be at beginning or end though))
-    
+    @Option(name = "--remove", usage = "Remove cracked hashes")
+    private static boolean remove = false;
+
     private static final String VERSION = "2.0";
     private static Timer timer;
+    private static ArrayList<String> cracked = new ArrayList<>();
+    private static ArrayList<byte[]> plains = new ArrayList<>();
+    private static File hashfile = new File(hashFile_filename);
+    private static ArrayList<byte[]> hashes = new ArrayList<>();
 
     private void parseArgs(String[] args) {
         try {
@@ -58,6 +66,16 @@ public class Athena {
             //Output.printStatus("Initialising", hashFile_filename, hashType, mode, 0);
 
             //Change this to method that checks input for errors
+            for (byte[] fileBuffer : FileUtils.getFileChunk(hashfile)) {
+                for (byte[] hash : ArrayUtils.formatFileBytes(fileBuffer)) {
+                    hashes.add(StringUtils.hexStringToByteArray(StringUtils.byteArrayToString(hash)));
+                }
+            }
+
+            if (remove) {
+                hashes = PotFile.remove(hashes);
+            }
+
             if (Mode.getMode(mode).requiresDict2() && wordlist_filename[1] == null) {
                 throw new IOException();
             }
@@ -76,29 +94,40 @@ public class Athena {
         timer = new Timer();
         timer.startTimer();
 
-        switch (mode) {
-            case 101:
-                Dictionary dictionary = new Dictionary(wordlist_filename[0], hashFile_filename, hashType);
-                dictionary.attack();
-                break;
+        if (hashes.size() != 0) {
+            switch (mode) {
+                case 101:
+                    Dictionary dictionary = new Dictionary(wordlist_filename[0], hashes, hashType);
+                    dictionary.attack();
+                    cracked = dictionary.getHashman().getCracked();
+                    plains = dictionary.getHashman().getPlains();
+                    break;
 
-            case 102:
-                Mask mask = new Mask(maskString, increment, hashFile_filename, hashType);
-                mask.attack();
-                break;
+                case 102:
+                    Mask mask = new Mask(maskString, increment, hashes, hashType);
+                    mask.attack();
+                    cracked = mask.getHashman().getCracked();
+                    plains = mask.getHashman().getPlains();
+                    break;
 
-            case 105:
-                Probabilistic probabilistic = new Probabilistic(hashFile_filename, hashType);
-                probabilistic.attack();
-                break;
+                case 105:
+                    Probabilistic probabilistic = new Probabilistic(hashes, hashType);
+                    probabilistic.attack();
+                    cracked = probabilistic.getHashman().getCracked();
+                    plains = probabilistic.getHashman().getPlains();
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
         }
         timer.stopTimer();
     }
 
     private static void initPostProcessing() {
+        PotFile pot = new PotFile();
+        pot.add(cracked, plains);
+
         System.out.println(
                         "\nStarted: " + timer.getStartDate() +
                         "\nStopped: " + timer.getEndDate() +

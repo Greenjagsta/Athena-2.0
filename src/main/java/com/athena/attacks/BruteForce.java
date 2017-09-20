@@ -2,12 +2,14 @@ package com.athena.attacks;
 
 import com.athena.utils.HashManager;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class BruteForce extends Attack {
-    public BruteForce(String hashes_filename, int hashType) {
-        super.setHashType(hashType, hashes_filename);
-        super.setHashman(new HashManager(hashes_filename));
+    public BruteForce(ArrayList<byte[]> hashes, int hashType) {
+        super.setHashType(hashType, hashes);
+        super.setHashman(new HashManager(hashes));
+        super.initDigestInstance();
     }
 
     @Override

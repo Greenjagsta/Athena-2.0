@@ -29,7 +29,8 @@ public enum Mode {
     DICTIONARY(101, "Dictionary", true, false, false),
     MASK(102, "Mask", false, false, true),
     HYBRID(103, "Hybrid", true, false, true),
-    COMBINATOR(104, "Combinator", true, true, false);
+    COMBINATOR(104, "Combinator", true, true, false),
+    PROBABILISTIC(105, "Probabilistic", false, false, false);
 
     private final int code;
     private final String modeName;

@@ -22,10 +22,15 @@ import com.athena.hashfamily.md.MD5;
 import com.athena.hashfamily.sha.SHA1;
 import com.athena.utils.HashManager;
 import com.athena.utils.Output;
+import com.athena.utils.StringUtils;
+import com.athena.utils.enums.Mode;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -38,6 +43,8 @@ public abstract class Attack {
     private HashManager hashman;
     private StringBuilder sb = new StringBuilder();
     private ArrayList<Integer> hashType;
+    private Object digestFunction;
+    private Method digest;
 
     //public abstract ArrayList<byte[]> getNextCandidates();
 
@@ -47,22 +54,19 @@ public abstract class Attack {
         byte[] candidateHash = getDigest(candidate);
 
         if (hashman.hashExists(candidateHash)) {
-            hashman.setCracked(sb.append(byteArrayToHexString(candidateHash)).toString());
+            hashman.setCracked(sb.append(byteArrayToHexString(candidateHash)).toString(), candidate);
             Output.printCracked(sb.toString(), byteArrayToString(candidate));
             sb.setLength(0);
         }
     }
 
     private byte[] getDigest(byte[] candidate) {
-        switch (hashType.get(0)) {
-            case 100:
-                return MD5.digest(candidate);
-
-            case 200:
-                return SHA1.digest(candidate);
-
-            default:
-                break;
+        try {
+            return (byte[]) digest.invoke(digestFunction, (Object) candidate);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(Attack.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
+            Logger.getLogger(Attack.class.getName()).log(Level.SEVERE, null, ex);
         }
         return new byte[0];
     }
@@ -71,14 +75,24 @@ public abstract class Attack {
         this.hashman = hashman;
     }
 
-    void setHashType(int hashType, String hashes_filename) {
+    public HashManager getHashman() {
+        return this.hashman;
+    }
+
+    void initDigestInstance() {
+        try {
+            digestFunction = Hash.getHash(hashType.get(0)).getClassname().newInstance();
+            digest = Hash.getHash(hashType.get(0)).getDigestInstance();
+        } catch (InstantiationException ex) {
+            Logger.getLogger(Attack.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(Attack.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    void setHashType(int hashType, ArrayList<byte[]> hashes) {
         if (hashType == 0 || !Hash.hashTypeExists(hashType)) {
-            try (BufferedReader br = new BufferedReader(new FileReader(hashes_filename))) {
-                this.hashType = Hash.getHashType(br.readLine());
-                br.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Attack.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            this.hashType = Hash.getHashType(StringUtils.byteArrayToHexString(hashes.get(0)));
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }

@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    
+    working_directory: ~/.circleci
+
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+
+    steps:
+
+      - checkout
+      
+      - run: mvn dependency:go-offline
+      
+      - run: mvn package

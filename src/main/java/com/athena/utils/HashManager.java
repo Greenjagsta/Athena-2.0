@@ -29,21 +29,22 @@ import static com.athena.utils.StringUtils.byteArrayToString;
 public class HashManager {
     private HashMap<String, byte[]> hashes;
     private ArrayList<String> cracked;
+    private ArrayList<byte[]> plains;
 
-    public HashManager(String hashes_filename) {
+    public HashManager(ArrayList<byte[]> hashesIn) {
         hashes = new HashMap<>();
         cracked = new ArrayList<>();
+        plains = new ArrayList<>();
 
-        setHashes(hashes_filename);
+        setHashes(hashesIn);
     }
 
-    private void setHashes(String hashes_filename) {
+    private void setHashes(ArrayList<byte[]> hashesIn) {
         try {
-            for (byte[] fileBuffer : FileUtils.getFileChunk(hashes_filename)) {
-                for (byte[] hash : StringUtils.formatFileBytes(fileBuffer)) {
-                    if (!(hash.length == 0) && !hashes.containsKey(byteArrayToString(hash))) {
-                        hashes.put(byteArrayToString(hash), StringUtils.hexStringToByteArray(StringUtils.byteArrayToString(hash)));
-                    }
+            for (byte[] hash : hashesIn) {
+                //System.out.println("HashIN: " + StringUtils.byteArrayToHexString(hash));
+                if (!(hash.length == 0) && !hashes.containsKey(byteArrayToString(hash))) {
+                    hashes.put(StringUtils.byteArrayToHexString(hash), hash);
                 }
             }
         } catch (NullPointerException ex) {
@@ -76,9 +77,15 @@ public class HashManager {
         return false;
     }
 
-    public void setCracked(String hash) {
+    public void setCracked(String hash, byte[] plaintext) {
         hashes.remove(hash);
         cracked.add(hash);
+
+        plains.add(plaintext);
+    }
+
+    public ArrayList<byte[]> getPlains() {
+        return plains;
     }
 
     public void printHashes() {
