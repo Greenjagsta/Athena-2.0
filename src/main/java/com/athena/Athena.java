@@ -90,6 +90,10 @@ public class Athena {
         }
     }
 
+    public static int getMode(){
+        return mode;
+    }
+
     private static void initAttack() {
         timer = new Timer();
         timer.startTimer();

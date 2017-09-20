@@ -17,6 +17,7 @@
 
 package com.athena.attacks;
 
+import com.athena.Athena;
 import com.athena.hashfamily.Hash;
 import com.athena.hashfamily.md.MD5;
 import com.athena.hashfamily.sha.SHA1;
@@ -55,7 +56,7 @@ public abstract class Attack {
 
         if (hashman.hashExists(candidateHash)) {
             hashman.setCracked(sb.append(byteArrayToHexString(candidateHash)).toString(), candidate);
-            Output.printCracked(sb.toString(), byteArrayToString(candidate));
+            Output.noRecoveredUpdate();
             sb.setLength(0);
         }
     }
@@ -96,6 +97,7 @@ public abstract class Attack {
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }
+        Output.printStatus("active", "input.txt", this.hashType.get(0), Athena.getMode());
     }
 
     public boolean isAllCracked() {
