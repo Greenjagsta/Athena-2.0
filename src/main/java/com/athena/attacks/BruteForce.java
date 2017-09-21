@@ -6,10 +6,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class BruteForce extends Attack {
-    public BruteForce(ArrayList<byte[]> hashes, int hashType) {
+    public BruteForce(ArrayList<byte[]> hashes, int hashType, int mode) {
         super.setHashType(hashType, hashes);
         super.setHashman(new HashManager(hashes));
         super.initDigestInstance();
+//        super.setMode();
     }
 
     @Override

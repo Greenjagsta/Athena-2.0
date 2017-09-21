@@ -32,7 +32,7 @@ public enum Mode {
     COMBINATOR(104, "Combinator", true, true, false),
     PROBABILISTIC(105, "Probabilistic", false, false, false);
 
-    private int code;
+    private final int code;
     private final String modeName;
     private final boolean requiresDict;
     private final boolean requiresDict2;
@@ -63,6 +63,10 @@ public enum Mode {
         for (Mode s : values()) {
             codeToModeMapping.put(s.code, s);
         }
+    }
+
+    public int getCode() {
+        return code;
     }
 
     public String getModeName() {

@@ -20,6 +20,7 @@ package com.athena.attacks;
 import com.athena.utils.ArrayUtils;
 import com.athena.utils.FileUtils;
 import com.athena.utils.HashManager;
+import com.athena.utils.enums.Mode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,9 +30,11 @@ public class Dictionary extends Attack {
 
     public Dictionary(String wordlist_filename, ArrayList<byte[]> hashes, int hashType) {
         this.wordlist = new File(wordlist_filename);
+        super.setMode(Mode.DICTIONARY.getCode());
         super.setHashType(hashType, hashes);
         super.setHashman(new HashManager(hashes));
         super.initDigestInstance();
+
     }
 
     @Override
