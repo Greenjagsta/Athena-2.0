@@ -159,28 +159,76 @@ public class Probabilistic extends Attack {
         }
     }
 
+    // Add multiple
     private void addNames(byte[] element) {
-        if (element[element.length - 1] == 76) {
-            int length = element[element.length - 2] - 48;
-            candidateElements.add(l33tify(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
-        } else {
-            int length = element[element.length - 1] - 48;
-            candidateElements.add(names.stream().filter(n -> n.length == length).collect(Collectors.toList()));
+        final int length;
+        switch (element[element.length - 1]) {
+            case 76:
+                length = element[element.length - 2] - 48;
+                candidateElements.add(l33tify(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
+                break;
+            case 67:
+                length = element[element.length - 2] - 48;
+                candidateElements.add(capitalise(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
+                break;
+            case 85:
+                length = element[element.length - 2] - 48;
+                candidateElements.add(uppercase(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
+                break;
+            default:
+                length = element[element.length - 1] - 48;
+                candidateElements.add(names.stream().filter(n -> n.length == length).collect(Collectors.toList()));
+
         }
     }
 
     private void addWords(byte[] element) {
-        if (element[element.length - 1] == 76) {
-            int length = element[element.length - 2] - 48;
-            candidateElements.add(l33tify(words.stream().filter(w -> w.length == (length)).collect(Collectors.toList())));
-        } else {
-            int length = element[element.length - 1] - 48;
-            candidateElements.add(words.stream().filter(w -> w.length == (length)).collect(Collectors.toList()));
+        final int length;
+        switch (element[element.length - 1]) {
+            case 76:
+                length = element[element.length - 2] - 48;
+                candidateElements.add(l33tify(words.stream().filter(w -> w.length == length).collect(Collectors.toList())));
+                break;
+            case 67:
+                length = element[element.length - 2] - 48;
+                candidateElements.add(capitalise(words.stream().filter(w -> w.length == length).collect(Collectors.toList())));
+                break;
+            case 85:
+                length = element[element.length - 2] - 48;
+                candidateElements.add(uppercase(words.stream().filter(w -> w.length == length).collect(Collectors.toList())));
+                break;
+            default:
+                length = element[element.length - 1] - 48;
+                candidateElements.add(words.stream().filter(w -> w.length == length).collect(Collectors.toList()));
+
         }
     }
 
     //TODO - Implement this
     private List<byte[]> l33tify(List<byte[]> candidates) {
+        for (byte[] wordArr : candidates) {
+            System.out.println(Arrays.toString(wordArr));
+        }
+        return candidates;
+    }
+
+    private List<byte[]> capitalise(List<byte[]> candidates) {
+        for (int i = 0; i < candidates.size(); i++) {
+            byte[] word = candidates.get(i);
+            word[0] -= 32;
+            candidates.set(i, word);
+        }
+        return candidates;
+    }
+
+    private List<byte[]> uppercase(List<byte[]> candidates) {
+        for (int i = 0; i < candidates.size(); i++) {
+            byte[] word = candidates.get(i);
+            for (int j = 0; j < word.length; j++) {
+                word[j] -= 32;
+            }
+            candidates.set(i, word);
+        }
         return candidates;
     }
 
