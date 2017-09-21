@@ -2,6 +2,7 @@ package com.athena.attacks;
 
 import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
+import com.athena.utils.enums.Mode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class Probabilistic extends Attack {
     private int currentIndex = 0;
 
     public Probabilistic(ArrayList<byte[]> hashes, int hashType) {
+        super.setMode(Mode.PROBABILISTIC.getCode());
         super.setHashType(hashType, hashes);
         super.setHashman(new HashManager(hashes));
         super.initDigestInstance();

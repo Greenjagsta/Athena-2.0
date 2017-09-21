@@ -5,6 +5,7 @@ import com.athena.utils.CounterList;
 import com.athena.utils.HashManager;
 import com.athena.utils.StringUtils;
 import com.athena.utils.enums.CharSet;
+import com.athena.utils.enums.Mode;
 
 import java.io.File;
 import java.util.*;
@@ -17,6 +18,7 @@ public class Mask extends Attack {
 
     public Mask(String mask, boolean increment, ArrayList<byte[]> hashes, int hashType) {
         super.setHashType(hashType, hashes);
+        super.setMode(Mode.MASK.getCode());
         super.setHashman(new HashManager(hashes));
         super.initDigestInstance();
 
