@@ -46,7 +46,7 @@ public abstract class Attack {
 
         if (hashman.hashExists(candidateHash)) {
             hashman.setCracked(sb.append(StringUtils.byteArrayToHexString(candidateHash)).toString(), candidate);
-            Output.noRecoveredUpdate(false);
+            Output.noRecoveredUpdate();
             sb.setLength(0);
         }
     }
@@ -87,7 +87,7 @@ public abstract class Attack {
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }
-        Output.printStatus(false,"active", "input.txt", this.hashType.get(0), mode);
+        Output.printStatus("active", "input.txt", this.hashType.get(0), mode);
     }
 
     public boolean isAllCracked() {

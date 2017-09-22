@@ -3,11 +3,10 @@ package com.athena.attacks;
 import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
 import com.athena.utils.enums.Mode;
+import com.sun.deploy.util.ArrayUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -206,10 +205,31 @@ public class Probabilistic extends Attack {
 
     //TODO - Implement this
     private List<byte[]> l33tify(List<byte[]> candidates) {
-        for (byte[] wordArr : candidates) {
-            System.out.println(Arrays.toString(wordArr));
+        HashMap<Integer, Integer> dict = l33tHashMap();
+        for (int i = 0; i < candidates.size(); i++) {
+            byte[] word = candidates.get(i);
+            for (int j = 0; j < word.length; j++) {
+                if (dict.get((int) word[j]) != null) {
+                    word[j] = (byte) (int) dict.get((int) word[j]);
+                }
+            }
         }
         return candidates;
+    }
+
+    private final HashMap<Integer, Integer> l33tHashMap() {
+        // Numerical l33t dictionary
+        HashMap<Integer, Integer> dict = new HashMap<Integer, Integer>();
+        dict.put(97, 52);   // A -> 4
+        dict.put(98, 56);   // B -> 8
+        dict.put(101, 51);  // E -> 3
+        dict.put(103, 54);  // G -> 6
+        dict.put(105, 49);  // I -> 1
+        dict.put(111, 48);  // O -> 0
+        dict.put(115, 53);  // S -> 5
+        dict.put(116, 55);  // T -> 7
+        dict.put(122, 50);  // Z -> 2
+        return dict;
     }
 
     private List<byte[]> capitalise(List<byte[]> candidates) {

@@ -29,19 +29,8 @@ public class Output {
         System.out.println("Starting AthenaHRT version " + version + "\n");
     }
 
-    public static void printStatus(Boolean isHack, String status, String hashfile_filename, int hashType, int mode) {
-        if (isHack) {
-            System.out.println(
-            " _   _            _              ___  ___          _      _ \n" +
-                    "| | | |          | |             |  \\/  |         | |    | |\n" +
-                    "| |_| | __ _  ___| | _____ _ __  | .  . | ___   __| | ___| |\n" +
-                    "|  _  |/ _` |/ __| |/ / _ \\ '__| | |\\/| |/ _ \\ / _` |/ _ \\ |\n" +
-                    "| | | | (_| | (__|   <  __/ |    | |  | | (_) | (_| |  __/_|\n" +
-                    "\\_| |_/\\__,_|\\___|_|\\_\\___|_|    \\_|  |_/\\___/ \\__,_|\\___(_)\n\n" +
-                    "Prepare to breach to mainframe...\n"
-            );
+    public static void printStatus(String status, String hashfile_filename, int hashType, int mode) {
 
-        } else {
             System.out.print(
                     "Session...: " + "Athena" +
                             "\nStatus....: " + status +
@@ -50,18 +39,13 @@ public class Output {
                             "\nHash Type.: " + Hash.getHash(hashType).getName() +
                             "\nMode......: " + Mode.getMode(mode).getModeName() +
                             "\nRecovered.: " + "0/" + FileUtils.getLineCount(hashfile_filename) + " (0%)");
-        }
     }
     // Add backspace
 
 
-    public static void noRecoveredUpdate(Boolean isHack) {
-        if (isHack) {
-            System.out.println("...PASSWORD HACKED!!!...");
-        }else{
+    public static void noRecoveredUpdate() {
             noCracked++;
             System.out.print("\rRecovered.: " + noCracked + "/" + lineCount + " (" + (float) ((int) (((float) noCracked / lineCount) * 10000)) / 100 + "%)");
-        }
     }
 
     public static void printCracked(String hash, String plaintext) {
