@@ -31,21 +31,21 @@ public class Output {
 
     public static void printStatus(String status, String hashfile_filename, int hashType, int mode) {
 
-            System.out.print(
-                    "Session...: " + "Athena" +
-                            "\nStatus....: " + status +
-                            "\nInput.....: " + hashfile_filename + " (" + FileUtils.getBytes(hashfile_filename) + " bytes)" +
-                            "\nHashes....: " + FileUtils.getLineCount(hashfile_filename) + " total, " + FileUtils.getUniques(hashfile_filename) + " unique" +
-                            "\nHash Type.: " + Hash.getHash(hashType).getName() +
-                            "\nMode......: " + Mode.getMode(mode).getModeName() +
-                            "\nRecovered.: " + "0/" + FileUtils.getLineCount(hashfile_filename) + " (0%)");
+        System.out.print(
+                "Session...: " + "Athena" +
+                        "\nStatus....: " + status +
+                        "\nInput.....: " + hashfile_filename + " (" + FileUtils.getBytes(hashfile_filename) + " bytes)" +
+                        "\nHashes....: " + FileUtils.getLineCount(hashfile_filename) + " total, " + FileUtils.getUniques(hashfile_filename) + " unique" +
+                        "\nHash Type.: " + Hash.getHash(hashType).getName() +
+                        "\nMode......: " + Mode.getMode(mode).getModeName() +
+                        "\nRecovered.: " + "0/" + FileUtils.getLineCount(hashfile_filename) + " (0%)");
     }
     // Add backspace
 
 
     public static void noRecoveredUpdate() {
-            noCracked++;
-            System.out.print("\rRecovered.: " + noCracked + "/" + lineCount + " (" + (float) ((int) (((float) noCracked / lineCount) * 10000)) / 100 + "%)");
+        noCracked++;
+        System.out.print("\rRecovered.: " + noCracked + "/" + lineCount + " (" + (float) ((int) (((float) noCracked / lineCount) * 10000)) / 100 + "%)");
     }
 
     public static void printCracked(String hash, String plaintext) {
