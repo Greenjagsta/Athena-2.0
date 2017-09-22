@@ -204,30 +204,30 @@ public class Probabilistic extends Attack {
 
     //TODO - Implement this
     private List<byte[]> l33tify(List<byte[]> candidates) {
-        HashMap<Integer, Integer> dict = l33tHashMap();
-        for (int i = 0; i < candidates.size(); i++) {
-            byte[] word = candidates.get(i);
-            for (int j = 0; j < word.length; j++) {
-                if (dict.get((int) word[j]) != null) {
-                    word[j] = (byte) (int) dict.get((int) word[j]);
-                }
-            }
-        }
+//        HashMap<Byte, Byte[]> dict = l33tHashMap();
+//        for (int i = 0; i < candidates.size(); i++) {
+//            byte[] word = candidates.get(i);
+//            for (int j = 0; j < word.length; j++) {
+//                if (dict.get((int) word[j]) != null) {
+//                    word[j] = (byte) (int) dict.get((int) word[j]);
+//                }
+//            }
+//        }
         return candidates;
     }
 
-    private final HashMap<Integer, Integer> l33tHashMap() {
+    private final HashMap<Byte, Byte[]> l33tHashMap() {
         // Numerical l33t dictionary
-        HashMap<Integer, Integer> dict = new HashMap<Integer, Integer>();
-        dict.put(97, 52);   // A -> 4
-        dict.put(98, 56);   // B -> 8
-        dict.put(101, 51);  // E -> 3
-        dict.put(103, 54);  // G -> 6
-        dict.put(105, 49);  // I -> 1
-        dict.put(111, 48);  // O -> 0
-        dict.put(115, 53);  // S -> 5
-        dict.put(116, 55);  // T -> 7
-        dict.put(122, 50);  // Z -> 2
+        HashMap<Byte, Byte[]> dict = new HashMap<>();
+        dict.put((byte) 97, new Byte[]{(byte) 52});   // A -> 4
+        dict.put((byte) 98, new Byte[]{(byte) 56});   // B -> 8
+        dict.put((byte) 101, new Byte[]{(byte) 51});  // E -> 3
+        dict.put((byte) 103, new Byte[]{(byte) 54});  // G -> 6
+        dict.put((byte) 105, new Byte[]{(byte) 49});  // I -> 1
+        dict.put((byte) 111, new Byte[]{(byte) 48});  // O -> 0
+        dict.put((byte) 115, new Byte[]{(byte) 53});  // S -> 5
+        dict.put((byte) 116, new Byte[]{(byte) 55});  // T -> 7
+        dict.put((byte) 122, new Byte[]{(byte) 50});  // Z -> 2
         return dict;
     }
 

@@ -21,6 +21,7 @@ import com.athena.hashfamily.Hash;
 import com.athena.utils.HashManager;
 import com.athena.utils.Output;
 import com.athena.utils.StringUtils;
+import com.athena.utils.Timer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,6 +36,7 @@ public abstract class Attack {
     private ArrayList<Integer> hashType;
     private Object digestFunction;
     private Method digest;
+    private double counter = 0;
     private int mode;
 
     //public abstract ArrayList<byte[]> getNextCandidates();
@@ -42,8 +44,13 @@ public abstract class Attack {
     public abstract void attack();
 
     protected void checkAttempt(byte[] candidate) {
+        float hashMax = 1000000;
+        counter++;
+        if(counter == hashMax){
+            Output.printSpeed();
+            counter = 0;
+        }
         byte[] candidateHash = getDigest(candidate);
-
         if (hashman.hashExists(candidateHash)) {
             hashman.setCracked(sb.append(StringUtils.byteArrayToHexString(candidateHash)).toString(), candidate);
             Output.noRecoveredUpdate();
@@ -87,7 +94,7 @@ public abstract class Attack {
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }
-        Output.printStatus("active", "input.txt", this.hashType.get(0), mode);
+        Output.printDetails("active", "input.txt", this.hashType.get(0), mode);
     }
 
     public boolean isAllCracked() {
