@@ -176,7 +176,7 @@ public class Probabilistic extends Attack {
             default:
                 length = element[element.length - 1] - 48;
                 candidateElements.add(names.stream().filter(n -> n.length == length).collect(Collectors.toList()));
-
+                break;
         }
     }
 
@@ -198,7 +198,7 @@ public class Probabilistic extends Attack {
             default:
                 length = element[element.length - 1] - 48;
                 candidateElements.add(words.stream().filter(w -> w.length == length).collect(Collectors.toList()));
-
+                break;
         }
     }
 
