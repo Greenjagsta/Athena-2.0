@@ -21,7 +21,6 @@ import com.athena.hashfamily.Hash;
 import com.athena.utils.HashManager;
 import com.athena.utils.Output;
 import com.athena.utils.StringUtils;
-import com.athena.utils.Timer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,8 +37,6 @@ public abstract class Attack {
     private Method digest;
     private double counter = 0;
     private int mode;
-
-    //public abstract ArrayList<byte[]> getNextCandidates();
 
     public abstract void attack();
 

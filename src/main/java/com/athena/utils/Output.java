@@ -22,7 +22,6 @@ import com.athena.hashfamily.Hash;
 
 
 public class Output {
-    Timer calcTime = new Timer();
     private static final int lineCount = FileUtils.getLineCount("input.txt");
     private static int noCracked = -1;
     private static long startTime = System.nanoTime();
@@ -49,7 +48,7 @@ public class Output {
         // device
     }
 
-//    public static void continuousUpdate();
+    public static void continuousUpdate(){};
 
     private static void printDevice(){
         System.out.println("Threads...: " + Runtime.getRuntime().availableProcessors());//.getProperty("os.name"));
@@ -83,7 +82,7 @@ public class Output {
 
     public static void printSpeed(){
         double timeTaken = System.nanoTime() - startTime;
-        double hPS = ((float)1/(timeTaken*10E-10));
+        double hPS = (float)1/(timeTaken*10E-10);
         System.out.print("\rSpeed....: " + hPS + "MH/s");
         startTime = System.nanoTime();
     }
