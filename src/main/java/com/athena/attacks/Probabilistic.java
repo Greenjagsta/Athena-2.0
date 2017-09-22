@@ -3,7 +3,6 @@ package com.athena.attacks;
 import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
 import com.athena.utils.enums.Mode;
-import com.sun.deploy.util.ArrayUtil;
 
 import java.io.File;
 import java.util.*;
