@@ -18,6 +18,7 @@
 package com.athena.attacks;
 
 import com.athena.hashfamily.Hash;
+import com.athena.rules.RulesProcessor;
 import com.athena.utils.HashManager;
 import com.athena.utils.Output;
 import com.athena.utils.StringUtils;
@@ -30,28 +31,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class Attack {
+    private final int hashMax = 1000000;
     private HashManager hashman;
-    private StringBuilder sb = new StringBuilder();
+    private RulesProcessor rulesProcessor;
     private ArrayList<Integer> hashType;
     private Object digestFunction;
     private Method digest;
     private double counter = 0;
-    private int mode;
 
     public abstract void attack();
 
+    //TODO - change this to work with ArrayList<byte[]> so that rules can be processed in chunks (needs a change in CounterList structure
     protected void checkAttempt(byte[] candidate) {
-        float hashMax = 1000000;
         counter++;
-        if(counter == hashMax){
-            Output.printSpeed();
+        if (counter == hashMax) {
+            Output.printDetails("Active");
             counter = 0;
         }
         byte[] candidateHash = getDigest(candidate);
         if (hashman.hashExists(candidateHash)) {
-            hashman.setCracked(sb.append(StringUtils.byteArrayToHexString(candidateHash)).toString(), candidate);
-            Output.noRecoveredUpdate();
-            sb.setLength(0);
+            hashman.setCracked(candidateHash, candidate);
+            Output.updateRecovered();
         }
     }
 
@@ -74,6 +74,10 @@ public abstract class Attack {
         return this.hashman;
     }
 
+    void setRulesProcessor(RulesProcessor rulesProcessor) {
+        this.rulesProcessor = rulesProcessor;
+    }
+
     void initDigestInstance() {
         try {
             digestFunction = Hash.getHash(hashType.get(0)).getClassname().newInstance();
@@ -91,14 +95,10 @@ public abstract class Attack {
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }
-        Output.printDetails("active", "input.txt", this.hashType.get(0), mode);
+        Output.updateHashType(this.hashType.get(0));
     }
 
     public boolean isAllCracked() {
         return hashman.isAllCracked();
-    }
-
-    public void setMode(int mode) {
-        this.mode = mode;
     }
 }

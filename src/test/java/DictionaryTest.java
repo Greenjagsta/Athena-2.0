@@ -15,6 +15,6 @@ public class DictionaryTest {
 
     @Test
     public void getNextCandidatesTest() {
-        Dictionary d = new Dictionary("test.txt", new ArrayList<byte[]>(), 100);
+        Dictionary d = new Dictionary("test.txt", new ArrayList<byte[]>(), 100, new String[]{"rule.txt"});
     }
 }

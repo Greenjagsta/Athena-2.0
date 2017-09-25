@@ -19,77 +19,133 @@ package com.athena.utils;
 
 import com.athena.utils.enums.Mode;
 import com.athena.hashfamily.Hash;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
+
+import java.io.File;
+
+import static org.fusesource.jansi.Ansi.ansi;
 
 
 public class Output {
-    private static final int lineCount = FileUtils.getLineCount("input.txt");
-    private static int noCracked = -1;
+    private static final String SPACING = "                    ";
+    private static String hashfile_filename;
+    private static int hashfile_bytes;
+    private static int hashfile_uniques;
+    private static int hashType;
+    private static int mode;
+    private static int lineCount;
+    private static int complexity = 0;
+    private static double hPS = 0;
+    private static int recovered = 0;
+    private static String current;
     private static long startTime = System.nanoTime();
+
+    public static void initDetails(File hashfile_file_in, int hashType_in, int mode_in) {
+        hashfile_filename = hashfile_file_in.getName();
+        lineCount = FileUtils.getLineCount(hashfile_file_in);
+        hashfile_bytes = FileUtils.getBytes(hashfile_file_in);
+        hashfile_uniques = FileUtils.getUniques(hashfile_file_in);
+        hashType = hashType_in;
+        mode = mode_in;
+    }
 
     public static void printInit(String version) {
         System.out.println("Starting AthenaHRT version " + version + "\n");
     }
 
+    public static void printDetails(String status) {
+        System.out.println("Session....: Athena");
+        printStatus(status);
+        printMode();
+        printInput();
+        printCurrent();
+        printHashes();
+        printHashType();
+        printSpeed();
+        printETA();
+        printRecovered();
+        //printDevice();
 
-    public static void printDetails(String status, String hashfile_filename, int hashType, int mode) {
-        System.out.println("Breaching the mainframe...\n");
-        System.out.println("Session...: Athena");
-//        printStatus(status);
-//        printInput("Input.txt");
-//        printHashes(hashfile_filename);
-//        printHashType(hashType);
-//        printMode(mode);
-//        printDevice();
-
-        // Speed
-        // input type (current)
-        // time started
-        // time taken
-        // device
+        resetCursorBeginning();
     }
 
-    public static void continuousUpdate(){};
-
     private static void printDevice(){
-        System.out.println("Threads...: " + Runtime.getRuntime().availableProcessors());//.getProperty("os.name"));
-        System.out.println("Memory....: " + Runtime.getRuntime().totalMemory());
+        System.out.println("Threads....: " + Runtime.getRuntime().availableProcessors());//.getProperty("os.name"));
+        System.out.println("Memory.....: " + Runtime.getRuntime().totalMemory());
         System.out.println("Memory Used: " + System.getProperties().getProperty("os-name"));
     }
 
     private static void printStatus(String status) {
-        System.out.println("Status....: " + status);
+        System.out.println("Status.....: " + status + SPACING);
     }
 
-    private static void printInput(String inputFile) {
-        System.out.println("Input.....: " + inputFile + " (" + FileUtils.getBytes(inputFile) + " bytes");
+    private static void printInput() {
+        System.out.println("Input......: " + hashfile_filename + " (" + hashfile_bytes + " bytes)" + SPACING);
     }
 
-    private static void printHashes(String hashFile) {
-        System.out.println("Hashes....: " + hashFile + " total, " + FileUtils.getUniques(hashFile) + " unique");
+    private static void printHashes() {
+        System.out.println("Hashes.....: " + lineCount + " total, " + hashfile_uniques + " unique"  + SPACING);
     }
 
-    private static void printHashType(int hashType) {
-        System.out.println("Hash Type.: " + Hash.getHash(hashType).getName());
+    private static void printHashType() {
+        if (hashType == 0) {
+            System.out.println("Hash Type..: Not Specified");
+        } else {
+            System.out.println("Hash Type..: " + Hash.getHash(hashType).getName() + SPACING);
+        }
     }
 
-    private static void printMode(int mode) {
-        System.out.println("Mode......: " + Mode.getMode(mode).getModeName());
+    private static void printMode() {
+        System.out.println("Mode.......: " + Mode.getMode(mode).getModeName() + SPACING);
     }
 
     private static void printMemUsed(){
-        System.out.println("Memory Used: " + (Runtime.getRuntime().freeMemory()/Runtime.getRuntime().totalMemory()));
+        System.out.println("Memory Used: " + Runtime.getRuntime().freeMemory()/Runtime.getRuntime().totalMemory()  + SPACING);
     }
 
-    public static void printSpeed(){
+    private static void printSpeed(){
         double timeTaken = System.nanoTime() - startTime;
-        double hPS = (float)1/(timeTaken*10E-10);
-        System.out.print("\rSpeed....: " + hPS + "MH/s");
+        hPS = Math.round(((float) 1 / (timeTaken * 10E-10)) * 100.0) / 100.0;
+        System.out.println("\rSpeed......: " + hPS + "MH/s" + SPACING);
         startTime = System.nanoTime();
     }
 
-    public static void noRecoveredUpdate() {
-        noCracked++;
-        System.out.print("\rRecovered.: " + noCracked + "/" + lineCount + " (" + (float) ((int) (((float) noCracked / lineCount) * 10000)) / 100 + "%)");
+    private static void printRecovered() {
+        System.out.print("\rRecovered..: " + recovered + "/" + lineCount + " (" + (float) ((int) (((float) recovered / lineCount) * 10000)) / 100 + "%)"  + SPACING);
+    }
+
+    private static void printCurrent() {
+        switch (mode) {
+            case 101:
+                complexity = FileUtils.getLineCount(new File(current));
+                System.out.println("Dictionary.: " + current + SPACING);
+                break;
+
+            case 102:
+                System.out.println("Mask.......: " + current + SPACING);
+                break;
+
+            case 105:
+                System.out.println("Pattern....: " + current + SPACING);
+                break;
+
+            default:
+                System.out.println("Current....: " + current + SPACING);
+                break;
+        }
+    }
+
+    private static void printETA() {
+        if (complexity <= 0 || hPS <= 0) {
+            System.out.println("\rETA........: " + "--:--:--");
+        } else {
+            System.out.println("\rETA........: " + Timer.formatTime((int) Math.round(complexity / (hPS * 1000000))));
+            complexity -= 1000000; //complexity -= (hPS * 1000000);
+            if (complexity < 1) {
+                complexity = 1;
+            }
+        }
     }
 
     public static void printCracked(String hash, String plaintext) {
@@ -98,5 +154,33 @@ public class Output {
 
     public static void printRemoved(int amount) {
         System.out.println(amount + " hashes removed from file");
+    }
+
+    public static void ansiSysInstall() {
+        AnsiConsole.systemInstall();
+    }
+
+    private static void resetCursorBeginning() {
+        System.out.println(ansi().cursorUp(10).cursorToColumn(0));
+    }
+
+    public static void resetCursorEnd() {
+        System.out.println(ansi().cursorDown(10));
+    }
+
+    public static void updateRecovered() {
+        recovered++;
+    }
+
+    public static void updateHashType(int hashType_in) {
+        hashType = hashType_in;
+    }
+
+    public static void updateCurrent(String current_in) {
+        current = current_in;
+    }
+
+    public static void updateComplexity(int complexity_in) {
+        complexity = complexity_in;
     }
 }

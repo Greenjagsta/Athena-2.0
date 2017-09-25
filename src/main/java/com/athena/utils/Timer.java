@@ -56,4 +56,13 @@ public class Timer {
     public static Date getCurrentDateTime() {
         return new Date();
     }
+
+    public static String formatTime(int seconds) {
+        int minutes = seconds / 60;
+        seconds -= minutes * 60;
+        int hours = minutes / 60;
+        minutes -= hours * 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
 }

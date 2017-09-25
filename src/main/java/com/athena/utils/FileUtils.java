@@ -31,9 +31,9 @@ import java.util.stream.Stream;
 public class FileUtils {
     private static InputStream is;
 
-    static int getLineCount(String filename) {
+    public static int getLineCount(File file) {
         try {
-            is = new FileInputStream(filename);
+            is = new FileInputStream(file);
             LineNumberReader lnr = new LineNumberReader(new BufferedReader(new InputStreamReader(is, "UTF-8")));
             lnr.skip(Long.MAX_VALUE);
             return lnr.getLineNumber() + 1;
@@ -50,9 +50,9 @@ public class FileUtils {
         }
     }
 
-    static int getBytes(String filename) {
+    static int getBytes(File file) {
         try {
-            is = new FileInputStream(filename);
+            is = new FileInputStream(file);
             return is.available();
 
         } catch (IOException ex) {
@@ -67,8 +67,8 @@ public class FileUtils {
         }
     }
 
-    static int getUniques(String filename) {
-        try (Stream<String> stream = Files.lines(Paths.get(filename))) {
+    static int getUniques(File file) {
+        try (Stream<String> stream = Files.lines(Paths.get(file.getName()))) {
             return (int)stream
                     .distinct()
                     .count();

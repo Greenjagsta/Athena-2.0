@@ -40,6 +40,8 @@ public class Athena {
     private static String hashFile_filename = "input.txt";
     @Option(name = "-d", aliases = "--dictionary-file", handler = StringArrayOptionHandler.class, usage = "Dictionary file to use")
     private static String[] wordlist_filename;
+    @Option(name = "-r", aliases = "--rules", handler = StringArrayOptionHandler.class, usage = "Rules to use")
+    private static String[] rules;
     @Option(name = "-m", aliases = "--mode", usage = "Attack mode to use")
     private static int mode;
     @Option(name = "-h", aliases = "--hash-type", usage = "Hash type in input file")
@@ -54,7 +56,7 @@ public class Athena {
 
     private static final String VERSION = "2.0";
     private static Timer timer;
-    private static ArrayList<String> cracked = new ArrayList<>();
+    private static ArrayList<byte[]> cracked = new ArrayList<>();
     private static ArrayList<byte[]> plains = new ArrayList<>();
     private static File hashfile = new File(hashFile_filename);
     private static ArrayList<byte[]> hashes = new ArrayList<>();
@@ -63,7 +65,6 @@ public class Athena {
         try {
             CmdLineParser clp = new CmdLineParser(this);
             clp.parseArgument(args);
-            //Output.printStatus("Initialising", hashFile_filename, hashType, mode, 0);
 
             //Change this to method that checks input for errors
             for (byte[] fileBuffer : FileUtils.getFileChunk(hashfile)) {
@@ -90,6 +91,30 @@ public class Athena {
         }
     }
 
+    private static void initOutput() {
+        Output.ansiSysInstall();
+        Output.initDetails(hashfile, hashType, mode);
+
+        switch (mode) {
+            case 101:
+                Output.updateCurrent(wordlist_filename[0]);
+                break;
+
+            case 102:
+                Output.updateCurrent(maskString);
+                break;
+
+            case 105:
+                Output.updateCurrent("N/A");
+                break;
+
+            default:
+                Output.updateCurrent("N/A");
+                break;
+        }
+        Output.printDetails("Initialising");
+    }
+
     private static void initAttack() {
         timer = new Timer();
         timer.startTimer();
@@ -97,21 +122,21 @@ public class Athena {
         if (hashes.size() != 0) {
             switch (mode) {
                 case 101:
-                    Dictionary dictionary = new Dictionary(wordlist_filename[0], hashes, hashType);
+                    Dictionary dictionary = new Dictionary(wordlist_filename[0], hashes, hashType, rules);
                     dictionary.attack();
                     cracked = dictionary.getHashman().getCracked();
                     plains = dictionary.getHashman().getPlains();
                     break;
 
                 case 102:
-                    Mask mask = new Mask(maskString, increment, hashes, hashType);
+                    Mask mask = new Mask(maskString, increment, hashes, hashType, rules);
                     mask.attack();
                     cracked = mask.getHashman().getCracked();
                     plains = mask.getHashman().getPlains();
                     break;
 
                 case 105:
-                    Probabilistic probabilistic = new Probabilistic(hashes, hashType);
+                    Probabilistic probabilistic = new Probabilistic(hashes, hashType, rules);
                     probabilistic.attack();
                     cracked = probabilistic.getHashman().getCracked();
                     plains = probabilistic.getHashman().getPlains();
@@ -128,9 +153,12 @@ public class Athena {
         PotFile pot = new PotFile();
         pot.add(cracked, plains);
 
+        Output.printDetails("Completed");
+        Output.resetCursorEnd();
+
         System.out.println(
-                        "\nStarted: " + timer.getStartDate() +
-                        "\nStopped: " + timer.getEndDate() +
+                        "\nStarted....: " + timer.getStartDate() +
+                        "\nStopped....: " + timer.getEndDate() +
                         " (" + timer.getElapsedTimeSeconds() + " seconds)"
         );
     }
@@ -138,6 +166,7 @@ public class Athena {
     public static void main(String[] args) {
         Output.printInit(VERSION);
         new Athena().parseArgs(args);
+        initOutput();
         initAttack();
         initPostProcessing();
     }

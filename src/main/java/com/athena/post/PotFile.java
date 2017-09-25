@@ -29,7 +29,7 @@ public class PotFile {
         }
     }
 
-    public void add(ArrayList<String> cracked, ArrayList<byte[]> plains) {
+    public void add(ArrayList<byte[]> cracked, ArrayList<byte[]> plains) {
         if (cracked.isEmpty()) {
             return;
         }
@@ -38,8 +38,8 @@ public class PotFile {
         readEntries();
 
         for (int i = 0; i < cracked.size(); i++) {
-            if (!ENTRIES.contains(cracked.get(i) + SEPERATOR + StringUtils.byteArrayToString(plains.get(i)))) {
-                ENTRIES.add(cracked.get(i) + SEPERATOR + StringUtils.byteArrayToString(plains.get(i)));
+            if (!ENTRIES.contains(StringUtils.byteArrayToHexString(cracked.get(i)) + SEPERATOR + StringUtils.byteArrayToString(plains.get(i)))) {
+                ENTRIES.add(StringUtils.byteArrayToHexString(cracked.get(i)) + SEPERATOR + StringUtils.byteArrayToString(plains.get(i)));
             }
         }
 

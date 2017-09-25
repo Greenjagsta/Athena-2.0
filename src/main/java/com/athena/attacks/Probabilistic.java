@@ -1,5 +1,6 @@
 package com.athena.attacks;
 
+import com.athena.rules.RulesProcessor;
 import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
 import com.athena.utils.enums.Mode;
@@ -20,13 +21,16 @@ public class Probabilistic extends Attack {
     private ArrayList<byte[]> candidates;
     private CounterList<byte[]> candidateElements;
 
+    private boolean complexityUpdateRequired = true;
     private int currentIndex = 0;
 
-    public Probabilistic(ArrayList<byte[]> hashes, int hashType) {
-        super.setMode(Mode.PROBABILISTIC.getCode());
+    public Probabilistic(ArrayList<byte[]> hashes, int hashType, String[] rules) {
         super.setHashType(hashType, hashes);
         super.setHashman(new HashManager(hashes));
+        super.setRulesProcessor(new RulesProcessor(rules));
         super.initDigestInstance();
+
+        Output.printDetails("Active");
 
         this.candidateElements = new CounterList<>();
         this.candidates = new ArrayList<>();
@@ -40,9 +44,14 @@ public class Probabilistic extends Attack {
     @Override
     public void attack() {
         while (isMoreCandidates()) {
+            if (complexityUpdateRequired) {
+                Output.updateComplexity(candidateElements.size() * FileUtils.getLineCount(PROBFILE));
+                complexityUpdateRequired = false;
+            }
+
             for (int i = 0; i < candidateElements.size(); i++) {
                 if (!super.isAllCracked()) {
-                    super.checkAttempt(ArrayUtils.stripList(candidateElements.get(i)));
+                    super.checkAttempt(candidateElements.get(i));
                 } else {
                     return;
                 }
@@ -53,8 +62,11 @@ public class Probabilistic extends Attack {
     public boolean isMoreCandidates() {
         try {
             if (currentIndex < candidates.size()) {
+                byte[] currentCandidate = candidates.get(currentIndex);
                 candidateElements.clear();
-                parseCandidate(candidates.get(currentIndex));
+
+                Output.updateCurrent(StringUtils.byteArrayToString(currentCandidate));
+                parseCandidate(currentCandidate);
                 currentIndex++;
                 return true;
             } else {
@@ -127,7 +139,7 @@ public class Probabilistic extends Attack {
 
             for (int i = 0; i < nums.size(); i++) {
                 int count = 0;
-                byte[] arr = ArrayUtils.stripList(nums.get(i));
+                byte[] arr = nums.get(i);
 
                 for (int j = 1; j < arr.length; j++) {
                     if (arr[0] == arr[j]) {
