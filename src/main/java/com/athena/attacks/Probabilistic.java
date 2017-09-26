@@ -6,6 +6,7 @@ import com.athena.utils.enums.CharSet;
 import com.athena.utils.enums.Mode;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,9 +16,11 @@ public class Probabilistic extends Attack {
     private final File PROBFILE = new File("resources/prob.txt");
     private final File WORDFILE = new File("resources/words.txt");
     private final File NAMEFILE = new File("resources/names.txt");
+    private final File SURNAMEFILE = new File("resources/surnames.txt");
 
     private ArrayList<byte[]> words;
     private ArrayList<byte[]> names;
+    private ArrayList<byte[]> surnames;
     private ArrayList<byte[]> candidates;
     private CounterList<byte[]> candidateElements;
 
@@ -36,6 +39,7 @@ public class Probabilistic extends Attack {
         this.candidates = new ArrayList<>();
         this.words = new ArrayList<>();
         this.names = new ArrayList<>();
+        this.surnames = new ArrayList<>();
 
         initElements();
         initCandidates();
@@ -96,11 +100,14 @@ public class Probabilistic extends Attack {
                     addStaticChars(element[0], element);
                     break;
                 case 110:
-                    addNames(element);
+                    addArrayToCandidate(names, element);
                     break;
                 case 119:
-                    addWords(element);
+                    addArrayToCandidate(words, element);
                     break;
+                // ** surnames ATM S, needs to change
+                case 83:
+                    addArrayToCandidate(surnames, element);
                 default:
                     break;
             }
@@ -169,47 +176,24 @@ public class Probabilistic extends Attack {
         }
     }
 
-    // Add multiple
-    private void addNames(byte[] element) {
+    private void addArrayToCandidate(ArrayList<byte[]> arrayList, byte[] element){
         final int length;
         switch (element[element.length - 1]) {
             case 76:
                 length = element[element.length - 2] - 48;
-                candidateElements.add(l33tify(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
+                candidateElements.add(l33tify(arrayList.stream().filter(w -> w.length == length).collect(Collectors.toList())));
                 break;
             case 67:
                 length = element[element.length - 2] - 48;
-                candidateElements.add(capitalise(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
+                candidateElements.add(capitalise(arrayList.stream().filter(w -> w.length == length).collect(Collectors.toList())));
                 break;
             case 85:
                 length = element[element.length - 2] - 48;
-                candidateElements.add(uppercase(names.stream().filter(n -> n.length == length).collect(Collectors.toList())));
+                candidateElements.add(uppercase(arrayList.stream().filter(w -> w.length == length).collect(Collectors.toList())));
                 break;
             default:
                 length = element[element.length - 1] - 48;
-                candidateElements.add(names.stream().filter(n -> n.length == length).collect(Collectors.toList()));
-                break;
-        }
-    }
-
-    private void addWords(byte[] element) {
-        final int length;
-        switch (element[element.length - 1]) {
-            case 76:
-                length = element[element.length - 2] - 48;
-                candidateElements.add(l33tify(words.stream().filter(w -> w.length == length).collect(Collectors.toList())));
-                break;
-            case 67:
-                length = element[element.length - 2] - 48;
-                candidateElements.add(capitalise(words.stream().filter(w -> w.length == length).collect(Collectors.toList())));
-                break;
-            case 85:
-                length = element[element.length - 2] - 48;
-                candidateElements.add(uppercase(words.stream().filter(w -> w.length == length).collect(Collectors.toList())));
-                break;
-            default:
-                length = element[element.length - 1] - 48;
-                candidateElements.add(words.stream().filter(w -> w.length == length).collect(Collectors.toList()));
+                candidateElements.add(arrayList.stream().filter(w -> w.length == length).collect(Collectors.toList()));
                 break;
         }
     }
@@ -281,6 +265,9 @@ public class Probabilistic extends Attack {
             }
             for (byte[] fileBuffer : FileUtils.getFileChunk(NAMEFILE)) {
                 names.addAll(ArrayUtils.formatFileBytes(fileBuffer));
+            }
+            for (byte[] fileBuffer: FileUtils.getFileChunk(SURNAMEFILE)){
+                surnames.addAll(ArrayUtils.formatFileBytes(fileBuffer));
             }
 
         } catch (NullPointerException ex) {
