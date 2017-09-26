@@ -3,10 +3,8 @@ package com.athena.attacks;
 import com.athena.rules.RulesProcessor;
 import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
-import com.athena.utils.enums.Mode;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
