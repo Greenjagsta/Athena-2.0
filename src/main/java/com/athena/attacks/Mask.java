@@ -41,13 +41,21 @@ public class Mask extends Attack {
             complexityUpdateRequired = false;
         }
 
-        for (int i = 0; i < candidateElements.size(); i++) {
+        while (candidateElements.hasMoreChunks()) {
+            if (!super.isAllCracked()) {
+                super.checkAttempt(candidateElements.getChunk());
+            } else {
+                return;
+            }
+        }
+
+        /*for (int i = 0; i < candidateElements.size(); i++) {
             if (!super.isAllCracked()) {
                 super.checkAttempt(candidateElements.get(i));
             } else {
                 return;
             }
-        }
+        }*/
     }
 
     //TODO Add support for masks containing static chars

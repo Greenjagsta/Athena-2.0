@@ -5,11 +5,17 @@ import java.util.Collections;
 import java.util.List;
 
 public class CounterList<T> {
+    private final int CHUNK_SIZE = 100000;
+    private final List<byte[]> chunk = new ArrayList<>();
     private final List<List<byte[]>> elements;
     private int size = 1;
+    private int lower;
+    private int upper;
 
     public CounterList() {
         this.elements = new ArrayList<>();
+        this.lower = 0;
+        this.upper = 0;
     }
 
     public CounterList(List<List<byte[]>> elements) {
@@ -33,12 +39,36 @@ public class CounterList<T> {
         return ArrayUtils.stripList(result);
     }
 
+    public List<byte[]> getChunk() {
+        chunk.clear();
+        this.upper = Math.min(upper + CHUNK_SIZE, size);
+
+        for (int i = lower; i < upper; i++) {
+            int index = i;
+            List<byte[]> result = new ArrayList<>();
+            for (int j = elements.size() - 1; j >= 0; j--) {
+                List<byte[]> counter = elements.get(j);
+                int counterSize = counter.size();
+                result.add(counter.get(index % counterSize));
+                index /= counterSize;
+            }
+            Collections.reverse(result);
+            chunk.add(ArrayUtils.stripList(result));
+        }
+        lower = upper;
+        return chunk;
+    }
+
+    public boolean hasMoreChunks() {
+        return this.lower != this.size;
+    }
+
     public int size() {
         return size;
     }
 
     public void clear() {
         elements.clear();
-        size = 1;
+        this.size = 1;
     }
 }

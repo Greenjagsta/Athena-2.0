@@ -51,17 +51,24 @@ public class Probabilistic extends Attack {
                 complexityUpdateRequired = false;
             }
 
-            for (int i = 0; i < candidateElements.size(); i++) {
+            while (candidateElements.hasMoreChunks()) {
+                if (!super.isAllCracked()) {
+                    super.checkAttempt(candidateElements.getChunk());
+                } else {
+                    return;
+                }
+            }
+            /*for (int i = 0; i < candidateElements.size(); i++) {
                 if (!super.isAllCracked()) {
                     super.checkAttempt(candidateElements.get(i));
                 } else {
                     return;
                 }
-            }
+            }*/
         }
     }
 
-    public boolean isMoreCandidates() {
+    private boolean isMoreCandidates() {
         try {
             if (currentIndex < candidates.size()) {
                 byte[] currentCandidate = candidates.get(currentIndex);
@@ -210,7 +217,7 @@ public class Probabilistic extends Attack {
         return candidates;
     }
 
-    private final HashMap<Byte, Byte[]> l33tHashMap() {
+    private HashMap<Byte, Byte[]> l33tHashMap() {
         // Numerical l33t dictionary
         HashMap<Byte, Byte[]> dict = new HashMap<>();
         dict.put((byte) 97, new Byte[]{(byte) 52});   // A -> 4

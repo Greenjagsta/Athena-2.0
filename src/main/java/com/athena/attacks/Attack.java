@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,16 +43,18 @@ public abstract class Attack {
     public abstract void attack();
 
     //TODO - change this to work with ArrayList<byte[]> so that rules can be processed in chunks (needs a change in CounterList structure
-    protected void checkAttempt(byte[] candidate) {
-        counter++;
-        if (counter == hashMax) {
-            Output.printDetails("Active");
-            counter = 0;
-        }
-        byte[] candidateHash = getDigest(candidate);
-        if (hashman.hashExists(candidateHash)) {
-            hashman.setCracked(candidateHash, candidate);
-            Output.updateRecovered();
+    void checkAttempt(List<byte[]> candidates) {
+        for (byte[] candidate : candidates) {
+            counter++;
+            if (counter == hashMax) {
+                Output.printDetails("Active");
+                counter = 0;
+            }
+            byte[] candidateHash = getDigest(candidate);
+            if (hashman.hashExists(candidateHash)) {
+                hashman.setCracked(candidateHash, candidate);
+                Output.updateRecovered();
+            }
         }
     }
 
@@ -98,7 +101,7 @@ public abstract class Attack {
         Output.updateHashType(this.hashType.get(0));
     }
 
-    public boolean isAllCracked() {
+    boolean isAllCracked() {
         return hashman.isAllCracked();
     }
 }
