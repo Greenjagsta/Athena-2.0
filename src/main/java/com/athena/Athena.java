@@ -24,6 +24,8 @@ import com.athena.post.PotFile;
 import com.athena.utils.*;
 import com.athena.utils.enums.Mode;
 
+import com.athena.utils.output.Stdout;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -92,27 +94,27 @@ public class Athena {
     }
 
     private static void initOutput() {
-        Output.ansiSysInstall();
-        Output.initDetails(hashfile, hashType, mode);
+        Stdout.ansiSysInstall();
+        Stdout.initDetails(hashfile, hashType, mode);
 
         switch (mode) {
             case 101:
-                Output.updateCurrent(wordlist_filename[0]);
+                Stdout.updateCurrent(wordlist_filename[0]);
                 break;
 
             case 102:
-                Output.updateCurrent(maskString);
+                Stdout.updateCurrent(maskString);
                 break;
 
             case 105:
-                Output.updateCurrent("N/A");
+                Stdout.updateCurrent("N/A");
                 break;
 
             default:
-                Output.updateCurrent("N/A");
+                Stdout.updateCurrent("N/A");
                 break;
         }
-        Output.printDetails("Initialising");
+        Stdout.printDetails("Initialising");
     }
 
     private static void initAttack() {
@@ -153,8 +155,8 @@ public class Athena {
         PotFile pot = new PotFile();
         pot.add(cracked, plains);
 
-        Output.printDetails("Completed");
-        Output.resetCursorEnd();
+        Stdout.printDetails("Completed");
+        Stdout.resetCursorEnd();
 
         System.out.println(
                         "\nStarted....: " + timer.getStartDate() +
@@ -164,7 +166,7 @@ public class Athena {
     }
 
     public static void main(String[] args) {
-        Output.printInit(VERSION);
+        Stdout.printInit(VERSION);
         new Athena().parseArgs(args);
         initOutput();
         initAttack();

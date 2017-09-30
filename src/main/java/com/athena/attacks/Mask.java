@@ -1,11 +1,11 @@
 package com.athena.attacks;
 
+import com.athena.attacks.extensions.CounterList;
+import com.athena.attacks.extensions.HashManager;
 import com.athena.rules.RulesProcessor;
-import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
-import com.athena.utils.enums.Mode;
+import com.athena.utils.output.Stdout;
 
-import java.io.File;
 import java.util.*;
 
 public class Mask extends Attack {
@@ -21,7 +21,7 @@ public class Mask extends Attack {
         super.setRulesProcessor(new RulesProcessor(rules));
         super.initDigestInstance();
 
-        Output.printDetails("Active");
+        Stdout.printDetails("Active");
 
         //TODO check increment here and pass mask to other method parsing it to check validity and to reduce it
         if (increment) {
@@ -37,7 +37,7 @@ public class Mask extends Attack {
     @Override
     public void attack() {
         if (complexityUpdateRequired) {
-            Output.updateComplexity(candidateElements.size());
+            Stdout.updateComplexity(candidateElements.size());
             complexityUpdateRequired = false;
         }
 

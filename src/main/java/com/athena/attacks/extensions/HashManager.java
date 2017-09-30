@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.athena.utils;
+package com.athena.attacks.extensions;
+
+import com.athena.utils.FileUtils;
 
 import java.util.*;
 import java.util.logging.Level;

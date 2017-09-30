@@ -1,8 +1,11 @@
 package com.athena.attacks;
 
+import com.athena.attacks.extensions.CounterList;
+import com.athena.attacks.extensions.HashManager;
 import com.athena.rules.RulesProcessor;
 import com.athena.utils.*;
 import com.athena.utils.enums.CharSet;
+import com.athena.utils.output.Stdout;
 
 import java.io.File;
 import java.util.*;
@@ -22,6 +25,8 @@ public class Probabilistic extends Attack {
     private ArrayList<byte[]> candidates;
     private CounterList<byte[]> candidateElements;
 
+    private HashMap<Byte, Byte[]> l33tMap;
+
     private boolean complexityUpdateRequired = true;
     private int currentIndex = 0;
 
@@ -31,15 +36,17 @@ public class Probabilistic extends Attack {
         super.setRulesProcessor(new RulesProcessor(rules));
         super.initDigestInstance();
 
-        Output.printDetails("Active");
+        Stdout.printDetails("Active");
 
         this.candidateElements = new CounterList<>();
         this.candidates = new ArrayList<>();
         this.words = new ArrayList<>();
         this.names = new ArrayList<>();
         this.surnames = new ArrayList<>();
+        this.l33tMap = new HashMap<>();
 
         initElements();
+        initL33tMap();
         initCandidates();
     }
 
@@ -47,7 +54,7 @@ public class Probabilistic extends Attack {
     public void attack() {
         while (isMoreCandidates()) {
             if (complexityUpdateRequired) {
-                Output.updateComplexity(candidateElements.size() * FileUtils.getLineCount(PROBFILE));
+                Stdout.updateComplexity(candidateElements.size() * FileUtils.getLineCount(PROBFILE));
                 complexityUpdateRequired = false;
             }
 
@@ -74,7 +81,7 @@ public class Probabilistic extends Attack {
                 byte[] currentCandidate = candidates.get(currentIndex);
                 candidateElements.clear();
 
-                Output.updateCurrent(StringUtils.byteArrayToString(currentCandidate));
+                Stdout.updateCurrent(StringUtils.byteArrayToString(currentCandidate));
                 parseCandidate(currentCandidate);
                 currentIndex++;
                 return true;
@@ -105,14 +112,14 @@ public class Probabilistic extends Attack {
                     addStaticChars(element[0], element);
                     break;
                 case 110:
-                    addArrayToCandidate(names, element);
+                    addDynamicChars(names, element);
                     break;
                 case 119:
-                    addArrayToCandidate(words, element);
+                    addDynamicChars(words, element);
                     break;
-                // ** surnames ATM S, needs to change
-                case 83:
-                    addArrayToCandidate(surnames, element);
+                // ** surnames ATM 'N', needs to change
+                case 78:
+                    addDynamicChars(surnames, element);
                 default:
                     break;
             }
@@ -181,7 +188,7 @@ public class Probabilistic extends Attack {
         }
     }
 
-    private void addArrayToCandidate(ArrayList<byte[]> arrayList, byte[] element){
+    private void addDynamicChars(ArrayList<byte[]> arrayList, byte[] element){
         final int length;
         switch (element[element.length - 1]) {
             case 76:
@@ -205,7 +212,6 @@ public class Probabilistic extends Attack {
 
     //TODO - Implement this
     private List<byte[]> l33tify(List<byte[]> candidates) {
-//        HashMap<Byte, Byte[]> dict = l33tHashMap();
 //        for (int i = 0; i < candidates.size(); i++) {
 //            byte[] word = candidates.get(i);
 //            for (int j = 0; j < word.length; j++) {
@@ -215,21 +221,6 @@ public class Probabilistic extends Attack {
 //            }
 //        }
         return candidates;
-    }
-
-    private HashMap<Byte, Byte[]> l33tHashMap() {
-        // Numerical l33t dictionary
-        HashMap<Byte, Byte[]> dict = new HashMap<>();
-        dict.put((byte) 97, new Byte[]{(byte) 52});   // A -> 4
-        dict.put((byte) 98, new Byte[]{(byte) 56});   // B -> 8
-        dict.put((byte) 101, new Byte[]{(byte) 51});  // E -> 3
-        dict.put((byte) 103, new Byte[]{(byte) 54});  // G -> 6
-        dict.put((byte) 105, new Byte[]{(byte) 49});  // I -> 1
-        dict.put((byte) 111, new Byte[]{(byte) 48});  // O -> 0
-        dict.put((byte) 115, new Byte[]{(byte) 53});  // S -> 5
-        dict.put((byte) 116, new Byte[]{(byte) 55});  // T -> 7
-        dict.put((byte) 122, new Byte[]{(byte) 50});  // Z -> 2
-        return dict;
     }
 
     private List<byte[]> capitalise(List<byte[]> candidates) {
@@ -250,6 +241,18 @@ public class Probabilistic extends Attack {
             candidates.set(i, word);
         }
         return candidates;
+    }
+
+    private void initL33tMap() {
+        l33tMap.put((byte) 97, new Byte[]{(byte) 52});   // A -> 4
+        l33tMap.put((byte) 98, new Byte[]{(byte) 56});   // B -> 8
+        l33tMap.put((byte) 101, new Byte[]{(byte) 51});  // E -> 3
+        l33tMap.put((byte) 103, new Byte[]{(byte) 54});  // G -> 6
+        l33tMap.put((byte) 105, new Byte[]{(byte) 49});  // I -> 1
+        l33tMap.put((byte) 111, new Byte[]{(byte) 48});  // O -> 0
+        l33tMap.put((byte) 115, new Byte[]{(byte) 53});  // S -> 5
+        l33tMap.put((byte) 116, new Byte[]{(byte) 55});  // T -> 7
+        l33tMap.put((byte) 122, new Byte[]{(byte) 50});  // Z -> 2
     }
 
     private void initCandidates() {

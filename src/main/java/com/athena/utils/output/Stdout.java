@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.athena.utils;
+package com.athena.utils.output;
 
 import com.athena.hashfamily.Hash;
+import com.athena.utils.FileUtils;
+import com.athena.utils.Timer;
 import com.athena.utils.enums.Mode;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -26,7 +28,7 @@ import java.io.File;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
-public class Output {
+public class Stdout {
     private static final String SPACING = "                    ";
     private static String hashfile_filename;
     private static int hashfile_bytes;

@@ -19,8 +19,8 @@ package com.athena.attacks;
 
 import com.athena.hashfamily.Hash;
 import com.athena.rules.RulesProcessor;
-import com.athena.utils.HashManager;
-import com.athena.utils.Output;
+import com.athena.attacks.extensions.HashManager;
+import com.athena.utils.output.Stdout;
 import com.athena.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,13 +47,13 @@ public abstract class Attack {
         for (byte[] candidate : candidates) {
             counter++;
             if (counter == hashMax) {
-                Output.printDetails("Active");
+                Stdout.printDetails("Active");
                 counter = 0;
             }
             byte[] candidateHash = getDigest(candidate);
             if (hashman.hashExists(candidateHash)) {
                 hashman.setCracked(candidateHash, candidate);
-                Output.updateRecovered();
+                Stdout.updateRecovered();
             }
         }
     }
@@ -98,7 +98,7 @@ public abstract class Attack {
         } else {
             this.hashType = new ArrayList<>(Collections.singletonList(hashType));
         }
-        Output.updateHashType(this.hashType.get(0));
+        Stdout.updateHashType(this.hashType.get(0));
     }
 
     boolean isAllCracked() {

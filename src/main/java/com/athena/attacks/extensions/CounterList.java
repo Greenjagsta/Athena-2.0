@@ -1,4 +1,6 @@
-package com.athena.utils;
+package com.athena.attacks.extensions;
+
+import com.athena.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

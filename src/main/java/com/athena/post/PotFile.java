@@ -2,7 +2,7 @@ package com.athena.post;
 
 import com.athena.utils.ArrayUtils;
 import com.athena.utils.FileUtils;
-import com.athena.utils.Output;
+import com.athena.utils.output.Stdout;
 import com.athena.utils.StringUtils;
 
 import java.io.File;
@@ -67,7 +67,7 @@ public class PotFile {
 
         hashes.removeAll(dupHashes);
 
-        Output.printRemoved(dupHashes.size());
+        Stdout.printRemoved(dupHashes.size());
         return hashes;
     }
 

@@ -20,9 +20,8 @@ package com.athena.attacks;
 import com.athena.rules.RulesProcessor;
 import com.athena.utils.ArrayUtils;
 import com.athena.utils.FileUtils;
-import com.athena.utils.HashManager;
-import com.athena.utils.Output;
-import com.athena.utils.enums.Mode;
+import com.athena.attacks.extensions.HashManager;
+import com.athena.utils.output.Stdout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,8 +36,8 @@ public class Dictionary extends Attack {
         super.setRulesProcessor(new RulesProcessor(rules));
         super.initDigestInstance();
 
-        Output.updateComplexity(FileUtils.getLineCount(wordlist));
-        Output.printDetails("Active");
+        Stdout.updateComplexity(FileUtils.getLineCount(wordlist));
+        Stdout.printDetails("Active");
     }
 
     @Override

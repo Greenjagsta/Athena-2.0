@@ -1,8 +1,7 @@
 package com.athena.attacks;
 
-import com.athena.utils.HashManager;
+import com.athena.attacks.extensions.HashManager;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class BruteForce extends Attack {

@@ -50,7 +50,7 @@ public class FileUtils {
         }
     }
 
-    static int getBytes(File file) {
+    public static int getBytes(File file) {
         try {
             is = new FileInputStream(file);
             return is.available();
@@ -67,7 +67,7 @@ public class FileUtils {
         }
     }
 
-    static int getUniques(File file) {
+    public static int getUniques(File file) {
         try (Stream<String> stream = Files.lines(Paths.get(file.getName()))) {
             return (int)stream
                     .distinct()
