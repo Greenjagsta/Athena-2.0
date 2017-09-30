@@ -17,9 +17,8 @@
 
 package com.athena.utils;
 
-import com.athena.utils.enums.Mode;
 import com.athena.hashfamily.Hash;
-import org.fusesource.jansi.Ansi;
+import com.athena.utils.enums.Mode;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.File;
