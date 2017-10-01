@@ -17,8 +17,8 @@
 
 package com.athena.attacks;
 
+import com.athena.attacks.extensions.rules.RulesProcessor;
 import com.athena.hashfamily.Hash;
-import com.athena.rules.RulesProcessor;
 import com.athena.attacks.extensions.HashManager;
 import com.athena.utils.output.Stdout;
 import com.athena.utils.StringUtils;
@@ -32,7 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class Attack {
-    private final int hashMax = 1000000;
+    private final int UPDATE_LIMIT = 1000000;
     private HashManager hashman;
     private RulesProcessor rulesProcessor;
     private ArrayList<Integer> hashType;
@@ -44,9 +44,14 @@ public abstract class Attack {
 
     //TODO - change this to work with ArrayList<byte[]> so that rules can be processed in chunks (needs a change in CounterList structure
     void checkAttempt(List<byte[]> candidates) {
+        if (rulesProcessor.isRules()) {
+            candidates = rulesProcessor.apply(candidates);
+        }
+
         for (byte[] candidate : candidates) {
             counter++;
-            if (counter == hashMax) {
+            if (counter == UPDATE_LIMIT) {
+                System.out.println(new String(candidate));
                 Stdout.printDetails("Active");
                 counter = 0;
             }

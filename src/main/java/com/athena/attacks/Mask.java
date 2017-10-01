@@ -2,7 +2,7 @@ package com.athena.attacks;
 
 import com.athena.attacks.extensions.CounterList;
 import com.athena.attacks.extensions.HashManager;
-import com.athena.rules.RulesProcessor;
+import com.athena.attacks.extensions.rules.RulesProcessor;
 import com.athena.utils.enums.CharSet;
 import com.athena.utils.output.Stdout;
 

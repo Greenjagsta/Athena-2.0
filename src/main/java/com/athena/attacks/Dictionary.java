@@ -17,7 +17,7 @@
 
 package com.athena.attacks;
 
-import com.athena.rules.RulesProcessor;
+import com.athena.attacks.extensions.rules.RulesProcessor;
 import com.athena.utils.ArrayUtils;
 import com.athena.utils.FileUtils;
 import com.athena.attacks.extensions.HashManager;
