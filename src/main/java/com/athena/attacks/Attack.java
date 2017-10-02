@@ -51,7 +51,6 @@ public abstract class Attack {
         for (byte[] candidate : candidates) {
             counter++;
             if (counter == UPDATE_LIMIT) {
-                System.out.println(new String(candidate));
                 Stdout.printDetails("Active");
                 counter = 0;
             }
