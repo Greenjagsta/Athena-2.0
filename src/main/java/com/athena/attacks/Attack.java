@@ -50,8 +50,9 @@ public abstract class Attack {
 
         for (byte[] candidate : candidates) {
             counter++;
+            System.out.println(new String(candidate));
             if (counter == UPDATE_LIMIT) {
-                Stdout.printDetails("Active");
+                //Stdout.printDetails("Active");
                 counter = 0;
             }
             byte[] candidateHash = getDigest(candidate);

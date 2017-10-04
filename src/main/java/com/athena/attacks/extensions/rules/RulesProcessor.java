@@ -5,11 +5,13 @@ import com.athena.utils.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RulesProcessor {
-    private ArrayList<byte[]> processedCandidates;
-    private ArrayList<byte[]> rules;
+    private List<byte[]> candidateToAdd;
+    private List<byte[]> processedCandidates;
+    private List<List<byte[]>> rules;
     private File ruleFile;
 
     public RulesProcessor(String[] rulesArray) {
@@ -26,8 +28,21 @@ public class RulesProcessor {
     public List<byte[]> apply(List<byte[]> candidates) {
         processedCandidates.clear();
         for (byte[] candidate : candidates) {
-            for (byte[] rule : rules) {
-                processedCandidates.addAll(Rule.getRule(rule[0]).apply(candidate, rule[1]));
+            for (List<byte[]> ruleLine : rules) {
+                System.out.println("\nNew RuleLine Loop!");
+                candidateToAdd = Collections.singletonList(candidate);
+                for (byte[] rule : ruleLine) {
+                    System.out.println("\nNew Loop!");
+                    System.out.println("rule: " + new String(rule));
+                    if (rule.length > 1) {
+                        System.out.println("before apply: " + new String(candidateToAdd.get(0)));
+                        candidateToAdd = Rule.getRule(rule[0]).apply(candidateToAdd, rule[1]);
+                        System.out.println("after apply: " + new String(candidateToAdd.get(0)));
+                    } else {
+                        candidateToAdd = Rule.getRule(rule[0]).apply(candidateToAdd, (byte) 0);
+                    }
+                }
+                processedCandidates.addAll(candidateToAdd);
             }
         }
         return processedCandidates;
@@ -37,6 +52,23 @@ public class RulesProcessor {
         return !rules.isEmpty();
     }
 
+    private List<byte[]> parseRule(byte[] rule) {
+        List<byte[]> result = new ArrayList<>();
+
+        for (int i = 0; i < rule.length; i++) {
+            switch (rule[i]) {
+                case 36: case 94:
+                    result.add(new byte[]{rule[i], rule[i + 1]});
+                    i++;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        return result;
+    }
+
     private void initRules(String[] rulesArray) {
         try {
             for (String ruleString : rulesArray) {
@@ -44,12 +76,12 @@ public class RulesProcessor {
                     for (byte[] fileBuffer : FileUtils.getFileChunk(new File(ruleString))) {
                         for (byte[] rule : ArrayUtils.formatFileBytes(fileBuffer)) {
                             if (rule[0] != 35) {
-                                rules.add(rule);
+                                rules.add(parseRule(rule));
                             }
                         }
                     }
                 } else {
-                    rules.add(ruleString.getBytes());
+                    rules.add(Collections.singletonList(ruleString.getBytes()));
                 }
             }
 
