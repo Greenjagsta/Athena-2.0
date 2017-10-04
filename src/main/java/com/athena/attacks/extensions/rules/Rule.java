@@ -13,14 +13,11 @@ public enum Rule {
         @Override
         public List<byte[]> apply(List<byte[]> candidates, byte operator) {
             resultList.clear();
-            System.out.println("candidate list size: " + candidates.size());
 
             for (byte[] candidate : candidates) {
-                System.out.println("candidate: " + new String(candidate));
                 byte[] result = new byte[candidate.length + 1];
                 System.arraycopy(candidate, 0, result, 0, candidate.length);
                 result[result.length - 1] = operator;
-                System.out.println("candidate result: " + new String(result));
                 resultList.add(result);
             }
             return resultList;
@@ -119,8 +116,8 @@ public enum Rule {
                 int length = candidate.length;
                 byte[] result = new byte[length];
 
-                for (int i = length; i <= 0; i--) {
-                    result[length - i] = candidate[i];
+                for (int i = length; i > 0; i--) {
+                    result[length - i] = candidate[i - 1];
                 }
                 resultList.add(result);
             }

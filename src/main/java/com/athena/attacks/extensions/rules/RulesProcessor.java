@@ -10,13 +10,14 @@ import java.util.List;
 
 public class RulesProcessor {
     private List<byte[]> candidateToAdd;
+    private List<byte[]> tempCandidateToAdd;
     private List<byte[]> processedCandidates;
     private List<List<byte[]>> rules;
-    private File ruleFile;
 
     public RulesProcessor(String[] rulesArray) {
         this.processedCandidates = new ArrayList<>();
         this.rules = new ArrayList<>();
+        this.tempCandidateToAdd = new ArrayList<>();
 
         if (rulesArray == null) {
             return;
@@ -27,19 +28,18 @@ public class RulesProcessor {
 
     public List<byte[]> apply(List<byte[]> candidates) {
         processedCandidates.clear();
+
         for (byte[] candidate : candidates) {
             for (List<byte[]> ruleLine : rules) {
-                System.out.println("\nNew RuleLine Loop!");
                 candidateToAdd = Collections.singletonList(candidate);
                 for (byte[] rule : ruleLine) {
-                    System.out.println("\nNew Loop!");
-                    System.out.println("rule: " + new String(rule));
+                    tempCandidateToAdd.clear();
+                    tempCandidateToAdd.addAll(candidateToAdd);
+
                     if (rule.length > 1) {
-                        System.out.println("before apply: " + new String(candidateToAdd.get(0)));
-                        candidateToAdd = Rule.getRule(rule[0]).apply(candidateToAdd, rule[1]);
-                        System.out.println("after apply: " + new String(candidateToAdd.get(0)));
+                        candidateToAdd = Rule.getRule(rule[0]).apply(tempCandidateToAdd, rule[1]);
                     } else {
-                        candidateToAdd = Rule.getRule(rule[0]).apply(candidateToAdd, (byte) 0);
+                        candidateToAdd = Rule.getRule(rule[0]).apply(tempCandidateToAdd, (byte) 0);
                     }
                 }
                 processedCandidates.addAll(candidateToAdd);
@@ -57,6 +57,10 @@ public class RulesProcessor {
 
         for (int i = 0; i < rule.length; i++) {
             switch (rule[i]) {
+                case 58: case 108: case 117: case 99: case 67: case 114:
+                    result.add(new byte[]{rule[i]});
+                    break;
+
                 case 36: case 94:
                     result.add(new byte[]{rule[i], rule[i + 1]});
                     i++;
