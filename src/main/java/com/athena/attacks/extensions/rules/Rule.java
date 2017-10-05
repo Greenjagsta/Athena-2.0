@@ -123,6 +123,21 @@ public enum Rule {
             }
             return resultList;
         }
+    },
+    DUPLICATE((byte) 100) {
+        @Override
+        public List<byte[]> apply(List<byte[]> candidates, byte operator) {
+            resultList.clear();
+
+            for (byte[] candidate : candidates) {
+                int length = candidate.length;
+                byte[] result = new byte[length << 1];
+                System.arraycopy(candidate, 0, result, 0, length);
+                System.arraycopy(candidate, 0, result, length, length);
+                resultList.add(result);
+            }
+            return resultList;
+        }
     };
 
     private final byte identifier;

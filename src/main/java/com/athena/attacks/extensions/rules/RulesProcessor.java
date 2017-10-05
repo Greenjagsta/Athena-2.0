@@ -57,7 +57,7 @@ public class RulesProcessor {
 
         for (int i = 0; i < rule.length; i++) {
             switch (rule[i]) {
-                case 58: case 108: case 117: case 99: case 67: case 114:
+                case 58: case 108: case 117: case 99: case 67: case 114: case 100:
                     result.add(new byte[]{rule[i]});
                     break;
 
