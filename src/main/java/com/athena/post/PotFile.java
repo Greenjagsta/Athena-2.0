@@ -2,7 +2,7 @@ package com.athena.post;
 
 import com.athena.utils.ArrayUtils;
 import com.athena.utils.FileUtils;
-import com.athena.utils.output.Stdout;
+import com.athena.output.Stdout;
 import com.athena.utils.StringUtils;
 
 import java.io.File;

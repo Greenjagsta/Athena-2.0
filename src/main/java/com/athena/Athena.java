@@ -24,7 +24,7 @@ import com.athena.post.PotFile;
 import com.athena.utils.*;
 import com.athena.utils.enums.Mode;
 
-import com.athena.utils.output.Stdout;
+import com.athena.output.Stdout;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;

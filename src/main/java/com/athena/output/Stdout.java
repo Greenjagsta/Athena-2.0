@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.athena.utils.output;
+package com.athena.output;
 
 import com.athena.hashfamily.Hash;
 import com.athena.utils.FileUtils;

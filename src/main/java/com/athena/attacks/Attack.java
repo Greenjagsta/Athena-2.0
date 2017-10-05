@@ -20,7 +20,7 @@ package com.athena.attacks;
 import com.athena.attacks.extensions.rules.RulesProcessor;
 import com.athena.hashfamily.Hash;
 import com.athena.attacks.extensions.HashManager;
-import com.athena.utils.output.Stdout;
+import com.athena.output.Stdout;
 import com.athena.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;

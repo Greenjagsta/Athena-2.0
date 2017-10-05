@@ -21,7 +21,7 @@ import com.athena.attacks.extensions.rules.RulesProcessor;
 import com.athena.utils.ArrayUtils;
 import com.athena.utils.FileUtils;
 import com.athena.attacks.extensions.HashManager;
-import com.athena.utils.output.Stdout;
+import com.athena.output.Stdout;
 
 import java.io.File;
 import java.util.ArrayList;
